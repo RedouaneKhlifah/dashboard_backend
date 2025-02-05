@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Repositories\ClientRepository;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Route;
+use App\Models\Client;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -12,7 +14,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(
+            ClientRepository::class,
+            function ($app) {
+                return new ClientRepository(new Client());
+            }
+        );
     }
 
     /**
