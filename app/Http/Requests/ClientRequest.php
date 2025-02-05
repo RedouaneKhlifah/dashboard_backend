@@ -24,7 +24,7 @@ class ClientRequest extends FormRequest
                 'email',
                 Rule::unique('clients', 'email')->ignore($clientId)
             ],
-            'phone' => 'required|string|regex:/^\+?[1-9]\d{1,14}$/',
+            'phone' => 'required|string|max:255',
             'country' => 'required|string|max:255',
             'city' => 'required|string|max:255',
             'address' => 'required|string|max:255',
