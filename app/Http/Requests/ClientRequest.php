@@ -30,4 +30,11 @@ class ClientRequest extends FormRequest
             'address' => 'required|string|max:255',
         ];
     }
+
+    public function messages()
+    {
+        return [
+            'email.unique' => trans("client.validation.email_already_exists"),
+        ];
+    }
 }
