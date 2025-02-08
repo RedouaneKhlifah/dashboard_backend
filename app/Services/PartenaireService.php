@@ -14,9 +14,9 @@ class PartenaireService
         $this->repository = $repository;
     }
 
-    public function getAllPartenaires()
+    public function getAllPartenaires($searchTerm = null, $perPage = 10)
     {
-        return $this->repository->all();
+        return $this->repository->getAllWithSearch($searchTerm, $perPage);
     }
 
     public function getPartenaire(Partenaire $partenaire)

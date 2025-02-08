@@ -14,9 +14,9 @@ class ClientService
         $this->repository = $repository;
     }
 
-    public function getAllClients()
+    public function getAllClients($searchTerm = null, $perPage = 10)
     {
-        return $this->repository->all();
+        return $this->repository->getAllWithSearch($searchTerm, $perPage);
     }
 
     public function getClient(Client $client) 

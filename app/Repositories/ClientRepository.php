@@ -13,10 +13,18 @@ class ClientRepository
         $this->model = $model;
     }
 
-    public function all()
+    public function getAllWithSearch($searchTerm = null, $perPage = 10)
     {
-        return $this->model->all();
-    }
+        $query = $this->model->newQuery();
+    
+        if ($searchTerm) {
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('first_name', 'like', "%{$searchTerm}%")
+                  ->orWhere('last_name', 'like', "%{$searchTerm}%");
+            });
+        }
+    
+        return $query->orderBy('created_at', 'desc')->paginate($perPage);    }
 
     public function find(Client $client)
     {

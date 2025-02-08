@@ -8,6 +8,8 @@ use App\Models\Client;
 use App\Services\ClientService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Request;
+
 
 class ClientController extends Controller
 {
@@ -18,9 +20,11 @@ class ClientController extends Controller
         $this->clientService = $clientService;
     }
 
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $clients = $this->clientService->getAllClients();
+        $searchTerm = $request->query('search');
+        $perPage = $request->query('per_page', 10);
+        $clients = $this->clientService->getAllClients($searchTerm, $perPage);
         return response()->json($clients);
     }
 

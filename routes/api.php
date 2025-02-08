@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\PartenaireController;
+use App\Http\Controllers\ProductController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -22,9 +23,12 @@ Route::middleware(['api', 'SetLocale'])->group(function () {
             return response()->json(['message' => 'Token is valid']);
         });
 
-        // Clients resource routes (protected by JWT auth)
+
+        // Api Resources  
         Route::apiResource('clients', ClientController::class);
         Route::apiResource('partenaires', PartenaireController::class);
+        Route::apiResource('products', ProductController::class);
+
 
     });
 });

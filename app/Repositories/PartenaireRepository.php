@@ -13,10 +13,18 @@ class PartenaireRepository
         $this->model = $model;
     }
 
-    public function all()
+    public function getAllWithSearch($searchTerm = null, $perPage = 10)
     {
-        return $this->model->all();
-    }
+        $query = $this->model->newQuery();
+
+        if ($searchTerm) {
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('name', 'like', "%{$searchTerm}%")
+                  ->orWhere('matricule', 'like', "%{$searchTerm}%");
+            });
+        }
+    
+        return $query->orderBy('created_at', 'desc')->paginate($perPage);    }
 
     public function find(Partenaire $partenaire)
     {
