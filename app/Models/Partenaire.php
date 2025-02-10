@@ -15,4 +15,12 @@ class Partenaire extends Model
         "matricule",
     ];
 
+    /**
+     * Get the tickets associated with the partenaire.
+     */
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class, 'partenaire_id');
+    }
+
 }

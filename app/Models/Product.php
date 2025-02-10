@@ -76,4 +76,14 @@ class Product extends Model
         return $this->image ? asset('storage/' . $this->image) : null;
     }
 
+    /**
+     * Get the tickets associated with the product.
+     */
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class, 'product_id');
+    }
+
+
+
 }

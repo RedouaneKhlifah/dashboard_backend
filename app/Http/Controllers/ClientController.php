@@ -31,7 +31,6 @@ class ClientController extends Controller
     public function store(ClientRequest $request): JsonResponse
     {
         $client = $this->clientService->createClient($request->validated());
-        Log::info('Broadcasting event for client:', ['client' => $client]);
         broadcast(new ModelUpdated($client, 'client', 'created'));
         return response()->json($client, 201);
     }
