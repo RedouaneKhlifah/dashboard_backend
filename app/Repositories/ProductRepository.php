@@ -24,7 +24,9 @@ class ProductRepository
             });
         }
 
-        return $query->orderBy('created_at', 'desc')->paginate($perPage);    
+        return $query->with('images')
+                     ->orderBy('created_at', 'desc')
+                     ->paginate($perPage);
     }
 
     public function find(Product $product)

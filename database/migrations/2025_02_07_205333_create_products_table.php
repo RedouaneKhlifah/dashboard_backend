@@ -21,7 +21,6 @@ return new class extends Migration
             $table->decimal('cost_price', 8, 2)->nullable(); // Optional cost price
             $table->text('description')->nullable(); // Optional description
             $table->decimal('tax', 8, 2)->nullable(); // Optional tax amount or percentage
-            $table->string('image')->nullable(); // Optional image path/URL
             $table->decimal('stock', 8, 2)->default(0); // Current inventory quantity (default: 0)
             $table->decimal('reorder_point', 8, 2)->default(0); // Reorder alert threshold (default: 0)
             $table->timestamps(); // Created at and updated at timestamps

@@ -3,8 +3,11 @@
 namespace App\Services;
 
 use App\Models\Product;
+use App\Models\Image;
 use App\Repositories\ProductRepository;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ProductService
 {
@@ -24,44 +27,81 @@ class ProductService
 
     public function getProduct(Product $product)
     {
-        $product = $this->repository->find($product);
+        $product = $this->repository->find($product) ->load('images');
 
         return $product;
     }
 
-    public function createProduct(array $data, $imageFile = null)
+    public function createProduct(array $data, $imageFiles = [])
     {
-        // Handle image upload
-        if ($imageFile) {
-            $data['image'] = $this->storeImage($imageFile);
+        DB::beginTransaction();
+    
+        try {
+            // Create the product
+            $product = $this->repository->create($data);
+    
+            // Handle image upload
+            if (count($imageFiles) > 0) {
+                $this->storeImages($product, $imageFiles);
+            }
+    
+            // Commit the transaction
+            DB::commit();
+    
+            return $product->load('images');
+        } catch (\Exception $e) {
+            // Rollback the transaction on error
+            DB::rollBack();
+            throw $e; // Re-throw the exception for further handling
         }
-
-        // Create the product
-        return $this->repository->create($data);
     }
 
-    public function updateProduct(Product $product, array $data, $imageFile = null)
+    public function updateProduct(Product $product, array $data, $imageFiles = [])
     {
-        // Handle image upload
-        if ($imageFile) {
-            // Delete the old image file (if it exists)
-            $this->deleteImage($product->image);
+        DB::beginTransaction();
+    
+        try {
+            
+            // Delete existing images
+            $this->deleteImages($product);
 
-            // Store the new image
-            $data['image'] = $this->storeImage($imageFile);
+            // Store the new images
+            $this->storeImages($product, $imageFiles);
+    
+            // Update the product
+            $updatedProduct = $this->repository->update($product, $data);
+    
+            // Commit the transaction
+            DB::commit();
+    
+            return $updatedProduct->load('images');;
+        } catch (\Exception $e) {
+            // Rollback the transaction on error
+            DB::rollBack();
+            throw $e; // Re-throw the exception for further handling
         }
-
-        // Update the product
-        return $this->repository->update($product, $data);
     }
 
     public function deleteProduct(Product $product)
     {
-        // Delete the image file (if it exists)
-        $this->deleteImage($product->image);
-
-        // Delete the product
-        return $this->repository->delete($product);
+        DB::beginTransaction();
+    
+        try {
+            // Delete all associated images
+            $this->deleteImages($product);
+    
+            // Delete the product
+            $deleted = $this->repository->delete($product);
+    
+            // Commit the transaction
+            DB::commit();
+    
+            return $deleted;
+        } catch (\Exception $e) {
+            // Rollback the transaction on error
+            DB::rollBack();
+            throw $e; // Re-throw the exception for further handling
+        }
     }
 
     /**
@@ -79,13 +119,37 @@ class ProductService
         return str_replace('public/', '', $imagePath);
     }
 
+    protected function storeImages(Product $product, array $imageFiles)
+    {
+        foreach ($imageFiles as $index => $imageFile) {
+            $imagePath = $this->storeImage($imageFile);
+
+            // Create an image record for the product
+            $product->images()->create([
+                'url' => $imagePath,
+                'position' => $index + 1, // Assign positions sequentially
+            ]);
+        }
+    }
     /**
      * Delete an image file from storage.
      */
-    protected function deleteImage($imagePath)
+    protected function deleteImage(Image $image)
     {
-        if ($imagePath && Storage::exists('public/' . $imagePath)) {
-            Storage::delete('public/' . $imagePath);
+        $relativePath = $image->getRawOriginal('url');
+        if ($relativePath && Storage::exists('public/' . $relativePath)) {
+            Storage::delete('public/' . $relativePath);
         }
+    }
+
+    protected function deleteImages(Product $product)
+    {
+        // Delete image files from storage
+        foreach ($product->images as $image) {
+            $this->deleteImage($image); // Pass the Image instance
+        }
+    
+        // Delete image records from the database
+        $product->images()->delete();
     }
 }

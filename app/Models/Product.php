@@ -6,21 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
 {
-    /**
-     * The attributes that are mass assignable.
-     *
-     * - display_on_desktop: boolean flag for visibility on the desktop application.
-     * - name: Product name.
-     * - sku: Optional product SKU.
-     * - unit: Unit of measurement (e.g., 'kg', 'pcs', etc.).
-     * - sale_price: Selling price.
-     * - cost_price: Optional cost price.
-     * - description: Optional description.
-     * - tax: Optional tax amount or percentage.
-     * - image: Optional image path/URL.
-     * - stock: Current inventory quantity.
-     * - reorder_point: Inventory level at which a reorder alert is triggered.
-     */
     protected $fillable = [
         'display_on_desktop',
         'name',
@@ -30,20 +15,10 @@ class Product extends Model
         'cost_price',
         'description',
         'tax',
-        'image',
         'stock',
         'reorder_point',
     ];
 
-    
-    /**
-     * Append the image_url attribute to the model's array/json output.
-     */
-    protected $appends = ['image_url'];
-
-    /**
-     * The attributes that should be cast to native types.
-     */
     protected $casts = [
         'display_on_desktop' => 'boolean',
         'sale_price'         => 'decimal:2',
@@ -52,38 +27,30 @@ class Product extends Model
         'stock'              => 'decimal:2',
         'reorder_point'      => 'decimal:2',
     ];
-    
+
+    // Remove or comment out the following line to stop appending image_urls:
 
     /**
-     * The "booted" method of the model.
+     * Get all of the product's images.
+     */
+    public function images()
+    {
+        return $this->morphMany(Image::class, 'imageable');
+    }
+
+    /**
+     * Automatically create images for the product.
      *
-     * This method automatically sets the unit to 'kg' if the product is sold by weight.
+     * @param array $imageUrls Array of image URLs to be saved.
+     * @return void
      */
-    protected static function booted()
+    public function createImages(array $imageUrls)
     {
-        static::saving(function ($product) {
-            if ($product->display_on_desktop) {
-                $product->unit = 'kg';
-            }
-        });
+        foreach ($imageUrls as $index => $url) {
+            $this->images()->create([
+                'url' => $url,
+                'position' => $index + 1,
+            ]);
+        }
     }
-
-       /**
-     * Get the full URL for the image.
-     */
-    public function getImageUrlAttribute()
-    {
-        return $this->image ? asset('storage/' . $this->image) : null;
-    }
-
-    /**
-     * Get the tickets associated with the product.
-     */
-    public function tickets()
-    {
-        return $this->hasMany(Ticket::class, 'product_id');
-    }
-
-
-
 }
