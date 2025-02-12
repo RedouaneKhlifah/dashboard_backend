@@ -42,7 +42,7 @@ class ProductController extends Controller
 
     public function update(ProductRequest $request, Product $product): JsonResponse
     {
-        $product = $this->productService->updateProduct($product, $request->validated());
+        $product = $this->productService->updateProduct($product, $request->validated(), $request->file('image'));
         broadcast(new ModelUpdated($product, 'product', 'updated'));
 
         return $product

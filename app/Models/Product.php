@@ -28,7 +28,7 @@ class Product extends Model
         'reorder_point'      => 'decimal:2',
     ];
 
-    // Remove or comment out the following line to stop appending image_urls:
+    protected $appends = ['image']; // Appending image attribute to model
 
     /**
      * Get all of the product's images.
@@ -52,5 +52,20 @@ class Product extends Model
                 'position' => $index + 1,
             ]);
         }
+    }
+
+    /**
+     * Get the first image of the product.
+     *
+     * @return string|null
+     */
+    public function getImageAttribute()
+    {
+        return "https://images.lifesizecustomcutouts.com/image/cache/catalog/febProds21/SP000069-500x500.png";
+    }
+
+    public function getDescriptionAttribute($value)
+    {
+        return $value ?? '';
     }
 }

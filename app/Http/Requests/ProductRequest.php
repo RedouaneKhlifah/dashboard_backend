@@ -17,8 +17,8 @@ class ProductRequest extends FormRequest
             'cost_price' => 'nullable|numeric|min:0',
             'description' => 'nullable|string',
             'tax' => 'nullable|numeric|min:0',
-            'images'             => 'nullable|array',
-            'images.*'           => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'images' => 'nullable|array',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'stock' => 'required|numeric|min:0',
             'reorder_point' => 'nullable|numeric|min:0',
         ];
