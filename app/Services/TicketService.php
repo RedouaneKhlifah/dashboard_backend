@@ -27,11 +27,6 @@ class TicketService
 
     public function createTicket(array $data)
     {
-        $matriculeRecord = Partenaire::firstOrCreate(
-            ['matricule' => $data['matricule']]
-        );
-
-        $data['partenaire_id'] = $matriculeRecord->id;
         
         return $this->repository->create($data);
     }

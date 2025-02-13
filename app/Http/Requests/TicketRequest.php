@@ -15,7 +15,7 @@ class TicketRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'matricule' => 'required|string|max:255',
+            'partenaire_id' => 'required|exists:partenaires,id',
             'product_id' => 'required|exists:products,id',
             'client_id' => 'required_if:status,' . StatusEnum::EXIT->value . '|nullable|exists:clients,id',
             'number_prints' => 'required|integer|min:1',
