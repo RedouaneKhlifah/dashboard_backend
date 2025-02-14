@@ -20,7 +20,8 @@ return new class extends Migration
             $table->string('country'); // Country
             $table->string('city'); // City
             $table->string('address'); // Address
-            $table->timestamps(); // Created at and updated at timestamps
+            $table->timestamps();
+            $table->softDeletes(); // Created at and updated at timestamps
         });
     }
 

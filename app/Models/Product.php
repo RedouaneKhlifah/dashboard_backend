@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model
 {
+    use HasFactory , SoftDeletes;
     protected $fillable = [
         'display_on_desktop',
         'name',
@@ -67,5 +70,15 @@ class Product extends Model
     public function getDescriptionAttribute($value)
     {
         return $value ?? '';
+    }
+
+    public function devis()
+    {
+        return $this->belongsToMany(Devis::class);
+    }
+
+    public function tickets()
+    {
+        return $this->belongsToMany(Ticket::class);
     }
 }

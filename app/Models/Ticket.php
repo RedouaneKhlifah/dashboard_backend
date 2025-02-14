@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
 use App\Enums\TicketEnums\StatusEnum;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Ticket extends Model
 {
-    use HasFactory;
+    use HasFactory , SoftDeletes;
 
     // Define the enum values for status
     public const STATUS_ENTRY = 'ENTRY';
@@ -36,7 +37,7 @@ class Ticket extends Model
      */
     public function partenaire()
     {
-        return $this->belongsTo(Partenaire::class, 'partenaire_id');
+        return $this->belongsTo(Partenaire::class, 'partenaire_id')->withTrashed();
     }
 
     /**
@@ -44,7 +45,7 @@ class Ticket extends Model
      */
     public function product()
     {
-        return $this->belongsTo(Product::class, 'product_id');
+        return $this->belongsTo(Product::class, 'product_id')->withTrashed();
     }
 
     /**
@@ -52,19 +53,28 @@ class Ticket extends Model
      */
     public function client()
     {
-        return $this->belongsTo(Client::class, 'client_id');
+        return $this->belongsTo(Client::class, 'client_id')->withTrashed();
     }
 
     /**
-     * Boot the model to add custom validation logic.
+     * Boot the model to add validation and prevent updates in a single request.
      */
     protected static function boot()
     {
         parent::boot();
 
-        // Add a saving event to validate the model before saving
+        // Validate and prevent modifications in a single request
         static::saving(function ($ticket) {
-            // If the status is EXIT, ensure client_id is set
+            // If updating, prevent modification of protected fields
+            if ($ticket->exists) {
+                foreach (['client_id', 'partenaire_id', 'product_id', 'status'] as $field) {
+                    if ($ticket->isDirty($field)) {
+                        $ticket->$field = $ticket->getOriginal($field);
+                    }
+                }
+            }
+
+            // If status is EXIT, ensure client_id is set
             if ($ticket->status === self::STATUS_EXIT && !$ticket->client_id) {
                 $validator = Validator::make(
                     ['client_id' => $ticket->client_id],

@@ -23,7 +23,8 @@ return new class extends Migration
             $table->decimal('tax', 8, 2)->nullable()->default(0); // Optional tax amount or percentage
             $table->decimal('stock', 8, 2)->default(0); // Current inventory quantity (default: 0)
             $table->decimal('reorder_point', 8, 2)->default(0); // Reorder alert threshold (default: 0)
-            $table->timestamps(); // Created at and updated at timestamps
+            $table->timestamps();
+            $table->softDeletes(); // Created at and updated at timestamps
         });
     }
 

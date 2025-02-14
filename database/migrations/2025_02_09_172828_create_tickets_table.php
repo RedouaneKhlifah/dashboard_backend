@@ -14,14 +14,15 @@ return new class extends Migration
     {
         Schema::create('tickets', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('partenaire_id')->constrained()->onDelete('cascade'); // Foreign key to partenaires
-            $table->foreignId('product_id')->constrained()->onDelete('cascade'); // Foreign key to products
-            $table->foreignId('client_id')->nullable()->constrained()->onDelete('cascade'); // Foreign key to clients, nullable
+            $table->foreignId('partenaire_id')->nullable()->constrained()->nullOnDelete(); // Set to NULL instead of deleting the ticket
+            $table->foreignId('product_id')->nullable()->constrained()->nullOnDelete(); // Set to NULL instead of deleting the ticket
+            $table->foreignId('client_id')->nullable()->constrained()->nullOnDelete(); // Set to NULL instead of deleting the ticket
             $table->integer('number_prints');
             $table->decimal('poids_brut', 10, 2); // Assuming weight in kg or other decimal format
             $table->decimal('poids_tare', 10, 2); // Assuming tare weight in kg or other decimal format
             $table->enum('status', ['ENTRY', 'EXIT']); // Enum for status
-            $table->timestamps(); // created_at and updated_at
+            $table->timestamps();
+            $table->softDeletes(); // created_at and updated_at
         });
 
         // Add check constraint to enforce that client_id is NULL when status is ENTRY

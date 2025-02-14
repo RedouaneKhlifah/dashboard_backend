@@ -15,7 +15,8 @@ return new class extends Migration
             $table->id(); // Auto-incrementing primary key
             $table->string('name'); // Name of the partenaire
             $table->string('matricule')->unique(); // Unique matricule
-            $table->timestamps(); // Created at and updated at timestamps
+            $table->timestamps();
+            $table->softDeletes(); // Created at and updated at timestamps
         });
     }
 

@@ -41,7 +41,7 @@ class ProductService
             $product = $this->repository->create($data);
     
             // Handle image upload
-            if ($imageFiles && count($imageFiles) > 0) {
+            if ( !is_null($imageFiles) && count($imageFiles) > 0) {
                 $this->storeImages($product, $imageFiles);
             }
     
