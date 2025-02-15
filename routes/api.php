@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\DevisController;
 use App\Http\Controllers\PartenaireController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\TicketController;
@@ -32,6 +33,8 @@ Route::middleware(['api', 'SetLocale'])->group(function () {
         Route::apiResource('products', ProductController::class);
         Route::apiResource('tickets', TicketController::class);
 
+        // Devis routes
+        Route::apiResource('devis', DevisController::class);
 
 
     });

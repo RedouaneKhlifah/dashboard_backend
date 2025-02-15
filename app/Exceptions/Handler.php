@@ -34,7 +34,7 @@ class Handler extends ExceptionHandler
             return response()->json([
                 'message' => "The requested {$model} with ID {$modelId} could not be found.",
                 'errors' => [
-                    'client_id' => ["The specified {$model} does not exist in our records."]
+                    $model => ["The specified {$model} does not exist in our records."]
                 ]
             ], 404);
         }

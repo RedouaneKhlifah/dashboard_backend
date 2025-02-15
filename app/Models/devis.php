@@ -8,33 +8,35 @@ use Illuminate\Database\Eloquent\Model;
 class Devis extends Model
 {
     use HasFactory;
+    protected $table = 'devis';
 
     protected $fillable = [
-        'client_id',
         'ticket_id',
+        "client_id",
         'reference',
+        'devis_date',
         'experation_date',
         'tva',
+        'remise_type',
         'remise',
         'note',
     ];
 
-    // Relationships
-    public function client()
-    {
-        return $this->belongsTo(Client::class);
-    }
-
     public function ticket()
     {
-        return $this->belongsTo(Ticket::class);
+        return $this->belongsTo(Ticket::class)->withTrashed();
+    }
+
+    public function client()
+    {
+        return $this->belongsTo(Client::class)->withTrashed();
     }
 
     public function products()
     {
         return $this->belongsToMany(Product::class, 'devis_product')
-                    ->withPivot('price_unitaire', 'quantity', 'unit')
-                    ->withTimestamps();
+                    ->withPivot('price_unitaire', 'quantity')
+                    ->withTimestamps()->withTrashed();
     }
 }
 
