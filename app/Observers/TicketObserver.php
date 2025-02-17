@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Models\Ticket;
 use App\Jobs\CreateDevisForTicketJob;
+use Illuminate\Support\Facades\Log;
 
 class TicketObserver
 {
@@ -12,6 +13,9 @@ class TicketObserver
      */
     public function created(Ticket $ticket)
     {
-        dispatch(new CreateDevisForTicketJob($ticket));
+        if ($ticket->status->value === 'EXIT') {
+            // Create a devis for the ticket
+            dispatch(new CreateDevisForTicketJob($ticket));
+        }
     }
 }

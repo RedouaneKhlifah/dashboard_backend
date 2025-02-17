@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 class Devis extends Model
 {
@@ -53,21 +54,25 @@ class Devis extends Model
     {
         // Ensure products is a collection
         $products = collect($this->products);
-
-        // Calculate subtotal (sum of product price * quantity)
+    
+        // Calculate subtotal (HT) - sum of (unit price * quantity)
         $subtotal = $products->sum(function ($product) {
-            return data_get($product, 'pivot.price_unitaire', 0) * data_get($product, 'pivot.quantity', 0);
+            return data_get($product, 'price_unitaire', 0) * data_get($product, 'quantity', 0);
         });
-
-        // Calculate TVA amount
+    
+        // Calculate TVA amount (TVA% * subtotal)
         $tvaAmount = ($subtotal * $this->tva) / 100;
-
+    
+        // Calculate Total TTC before applying the discount
+        $totalTTC = $subtotal + $tvaAmount;
+    
         // Calculate Remise amount based on type (PERCENT or FIXED)
         $remiseAmount = $this->remise_type === "PERCENT"
-            ? ($subtotal * $this->remise) / 100
+            ? ($subtotal * $this->remise) / 100  // Discount applied on subtotal (HT)
             : $this->remise;
-
-        // Final total calculation
-        return round($subtotal + $tvaAmount - $remiseAmount, 2);
+    
+        // Final total after applying the remise
+        return round($totalTTC - $remiseAmount, 2);
     }
+    
 }

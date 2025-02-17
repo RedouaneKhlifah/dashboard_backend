@@ -29,12 +29,13 @@ Route::middleware(['api', 'SetLocale'])->group(function () {
         // Api Resources  
         Route::apiResource('clients', ClientController::class);
         Route::apiResource('partenaires', PartenaireController::class);
-        Route::post('/products/{product}', [ProductController::class, 'update'])->name('product.update');
+        Route::post('/products/{product}', [ProductController::class, 'update']);
         Route::apiResource('products', ProductController::class);
         Route::apiResource('tickets', TicketController::class);
 
         // Devis routes
         Route::apiResource('devis', DevisController::class);
+        Route::post('/devis/send-devis-email/{devi}', [DevisController::class, 'sendDevisToEmail']);
 
 
     });
