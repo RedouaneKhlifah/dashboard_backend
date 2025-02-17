@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Events\ModelUpdated;
 use App\Http\Requests\TicketRequest;
+use App\Jobs\CreateDevisForTicketJob;
 use App\Models\Ticket;
 use App\Services\TicketService;
 use Illuminate\Http\JsonResponse;

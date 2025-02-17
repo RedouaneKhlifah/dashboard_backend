@@ -14,7 +14,7 @@ return new class extends Migration
             $table->foreignId('client_id')->nullable()->constrained()->nullOnDelete(); 
             $table->string('reference');
             $table->date('devis_date');
-            $table->date('experation_date');
+            $table->date('expiration_date');
             $table->decimal('tva', 5, 2);
             $table->enum('remise_type', ['PERCENT', 'FIXED']);
             $table->decimal('remise', 10, 2);

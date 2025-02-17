@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Partenaire;
 use App\Models\Ticket;
 use App\Repositories\TicketRepository;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class TicketService
 {
@@ -15,17 +16,17 @@ class TicketService
         $this->repository = $repository;
     }
 
-    public function getAllTickets($searchTerm = null, $perPage = 10)
+    public function getAllTickets($searchTerm = null, $perPage = 10): LengthAwarePaginator
     {
         return $this->repository->getAllWithSearch($searchTerm, $perPage);
     }
 
-    public function getTicket(Ticket $ticket)
+    public function getTicket(Ticket $ticket): Ticket
     {
         return $this->repository->find($ticket);
     }
 
-    public function createTicket(array $data)
+    public function createTicket(array $data): Ticket
     {
         
         return $this->repository->create($data);
@@ -36,7 +37,7 @@ class TicketService
         return $this->repository->update($ticket, $data);
     }
 
-    public function deleteTicket(Ticket $ticket)
+    public function deleteTicket(Ticket $ticket): bool | null
     {
         return $this->repository->delete($ticket);
     }

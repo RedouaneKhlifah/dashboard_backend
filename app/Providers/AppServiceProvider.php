@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\Ticket;
+use App\Observers\TicketObserver;
 use App\Repositories\ClientRepository;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Route;
@@ -33,5 +35,10 @@ class AppServiceProvider extends ServiceProvider
 
         Route::middleware('web')
             ->group(base_path('routes/web.php'));
+
+
+        // Register the observer
+       Ticket::observe(TicketObserver::class);
+
     }
 }

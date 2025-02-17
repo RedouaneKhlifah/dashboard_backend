@@ -10,10 +10,12 @@ return new class extends Migration
     {
         Schema::create('devis_product', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('devis_id')->nullable()->constrained()->nullOnDelete(); 
-            $table->foreignId('product_id')->constrained()->onDelete('cascade');
+            $table->foreignId('devis_id')->nullable()->constrained()->nullOnDelete();
+            // Make product_id nullable since we are using nullOnDelete()
+            $table->foreignId('product_id')->nullable()->constrained()->nullOnDelete();
             $table->decimal('price_unitaire', 10, 2);
             $table->integer('quantity');
+            $table->foreignId('ticket_id')->nullable()->constrained()->nullOnDelete();
             $table->timestamps();
         });
     }
