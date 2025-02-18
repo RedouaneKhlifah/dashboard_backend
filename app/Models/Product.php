@@ -72,9 +72,9 @@ class Product extends Model
         return $value ?? '';
     }
 
-    public function devis()
+    public function order()
     {
-        return $this->belongsToMany(Devis::class);
+        return $this->belongsToMany(Order::class);
     }
 
     public function tickets()

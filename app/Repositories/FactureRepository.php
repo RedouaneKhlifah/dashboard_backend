@@ -2,25 +2,25 @@
 
 namespace App\Repositories;
 
-use App\Models\Devis;
+use App\Models\Facture;
 
-class DevisRepository
+class FactureRepository
 {
     protected $model;
 
-    public function __construct(Devis $model)
+    public function __construct(Facture $model)
     {
         $this->model = $model;
     }
 
     public function getAllWithSearch($searchTerm = null, $perPage = 10)
     {
-        $query = $this->model->with(['ticket', 'products' , "client"]);
+        $query = $this->model->with(['order', 'products' , "client"]);
 
         if ($searchTerm) {
             $query->where(function ($q) use ($searchTerm) {
                 $q->where('reference', 'like', "%{$searchTerm}%")
-                  ->orWhereHas('ticket', function ($q) use ($searchTerm) {
+                  ->orWhereHas('order.ticket', function ($q) use ($searchTerm) {
                       $q->whereHas('client', function ($q) use ($searchTerm) {
                           $q->where('first_name', 'like', "%{$searchTerm}%")
                             ->orWhere('last_name', 'like', "%{$searchTerm}%");
@@ -35,14 +35,14 @@ class DevisRepository
         return $query->orderBy('created_at', 'desc')->paginate($perPage);
     }
 
-    public function find(Devis $devis)
+    public function find(Facture $facture)
     {
-        return $devis->load(['ticket', 'products', 'client']);
+        return $facture->load(["order" , "products", "client"]);
     }
 
     public function create(array $data)
     {
-        $devis = $this->model->create($data);
+        $facture = $this->model->create($data);
         
         // If products are included in the data, attach them
         if (isset($data['products'])) {
@@ -52,15 +52,15 @@ class DevisRepository
                     'quantity' => $item['quantity']
                 ]];
             });
-            $devis->products()->attach($products);
+            $facture->products()->attach($products);
         }
 
-        return $devis->load(['ticket', 'products']);
+        return $facture->load(['products']);
     }
 
-    public function update(Devis $devis, array $data)
+    public function update(Facture $facture, array $data)
     {
-        $devis->update($data);
+        $facture->update($data);
 
         // If products are included in the data, sync them
         if (isset($data['products'])) {
@@ -70,14 +70,14 @@ class DevisRepository
                     'quantity' => $item['quantity']
                 ]];
             });
-            $devis->products()->sync($products);
+            $facture->products()->sync($products);
         }
 
-        return $devis->load(['ticket', 'products']);
+        return $facture->load(['order.ticket', 'products']);
     }
 
-    public function delete(Devis $devis)
+    public function delete(Facture $facture)
     {
-        return $devis->delete();
+        return $facture->delete();
     }
 }

@@ -3,7 +3,7 @@
 namespace App\Observers;
 
 use App\Models\Ticket;
-use App\Jobs\CreateDevisForTicketJob;
+use App\Jobs\CreateOrderForTicketJob;
 use Illuminate\Support\Facades\Log;
 
 class TicketObserver
@@ -14,8 +14,8 @@ class TicketObserver
     public function created(Ticket $ticket)
     {
         if ($ticket->status->value === 'EXIT') {
-            // Create a devis for the ticket
-            dispatch(new CreateDevisForTicketJob($ticket));
+            // Create a order for the ticket
+            dispatch(new CreateOrderForTicketJob($ticket));
         }
     }
 }

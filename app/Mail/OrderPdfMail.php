@@ -5,33 +5,33 @@ namespace App\Mail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use App\Models\Devis;
+use App\Models\Order;
 use Illuminate\Support\Facades\Log;
 
-class DevisPdfMail extends Mailable
+class OrderPdfMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $devis;
+    public $order;
     protected $pdfPath;
 
-    public function __construct($pdfPath, Devis $devis)
+    public function __construct($pdfPath, Order $order)
     {
         $this->pdfPath = $pdfPath;
-        $this->devis = $devis;
+        $this->order = $order;
     }
 
     public function build()
     {
         Log::info('Attaching PDF to email', [
             'pdfPath' => $this->pdfPath,
-            'devisReference' => $this->devis->reference,
+            'orderReference' => $this->order->reference,
         ]);
 
-        return $this->subject('Devis Details - ' . $this->devis->reference)
-                    ->view('emails.devis')
+        return $this->subject('Order Details - ' . $this->order->reference)
+                    ->view('emails.order')
                     ->attach($this->pdfPath, [
-                        'as' => 'devis-' . $this->devis->reference . '.pdf',
+                        'as' => 'order-' . $this->order->reference . '.pdf',
                         'mime' => 'application/pdf',
                     ]);
     }

@@ -4,19 +4,17 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Log;
-
-class Devis extends Model
+use Illuminate\Database\Eloquent\SoftDeletes;
+class Facture extends Model
 {
-    use HasFactory;
+    use HasFactory , SoftDeletes;
 
-    protected $table = 'devis';
+    protected $table = 'factures';
 
     protected $fillable = [
-        'ticket_id',
+        'order_id',
         'client_id',
         'reference',
-        'devis_date',
         'expiration_date',
         'tva',
         'remise_type',
@@ -29,9 +27,9 @@ class Devis extends Model
     /**
      * Relationships
      */
-    public function ticket()
+    public function order()
     {
-        return $this->belongsTo(Ticket::class)->withTrashed();
+        return $this->belongsTo(Order::class )->withTrashed();
     }
 
     public function client()
@@ -41,8 +39,8 @@ class Devis extends Model
 
     public function products()
     {
-        return $this->belongsToMany(Product::class, 'devis_product')
-                    ->withPivot('price_unitaire', 'quantity' ,'ticket_id')
+        return $this->belongsToMany(Product::class, 'facture_product')
+                    ->withPivot('price_unitaire', 'quantity' ,'order_id')
                     ->withTimestamps()
                     ->withTrashed();
     }

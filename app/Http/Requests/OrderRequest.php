@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class DevisRequest extends FormRequest
+class OrderRequest extends FormRequest
 {
     public function authorize()
     {
@@ -17,7 +17,7 @@ class DevisRequest extends FormRequest
             'ticket_id' => 'nullable|exists:tickets,id',
             "client_id" => 'required|exists:clients,id',
             'reference' => 'required|string|max:255',
-            'devis_date' => 'required|date',
+            'order_date' => 'required|date',
             'expiration_date' => 'required|date',
             'tva' => 'required|numeric',
             'remise_type' => 'required|string|max:255 |in:PERCENT,FIXED',

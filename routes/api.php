@@ -2,7 +2,8 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientController;
-use App\Http\Controllers\DevisController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\FactureController;
 use App\Http\Controllers\PartenaireController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\TicketController;
@@ -33,9 +34,14 @@ Route::middleware(['api', 'SetLocale'])->group(function () {
         Route::apiResource('products', ProductController::class);
         Route::apiResource('tickets', TicketController::class);
 
-        // Devis routes
-        Route::apiResource('devis', DevisController::class);
-        Route::post('/devis/send-devis-email/{devi}', [DevisController::class, 'sendDevisToEmail']);
+        // Order routes
+        Route::apiResource('orders', OrderController::class);
+        Route::post('/orders/send-order-email/{devi}', [OrderController::class, 'sendOrderToEmail']);
+
+        Route::apiResource('factures', FactureController::class);
+        Route::post('/factures/send-factures-email/{facture}', [FactureController::class, 'sendFactureToEmail']);
+
+
 
 
     });
