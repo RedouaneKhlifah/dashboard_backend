@@ -25,11 +25,21 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
+
     public function down(): void
     {
-        Schema::dropIfExists('clients'); // Drop the table if the migration is rolled back
+        // Disable foreign key checks
+        DB::statement('SET FOREIGN_KEY_CHECKS = 0');
+        
+        // Optionally, if you need to drop a check constraint and your MySQL version supports it,
+        // use the DROP CHECK syntax. (Otherwise, you may omit this if the table is being dropped.)
+        // DB::statement('ALTER TABLE tickets DROP CHECK client_id_required_for_exit');
+        
+        Schema::dropIfExists('tickets'); // Drop the table if the migration is rolled back
+
+        
+        // Re-enable foreign key checks
+        DB::statement('SET FOREIGN_KEY_CHECKS = 1');
     }
+    
 };

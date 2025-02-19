@@ -36,13 +36,12 @@ Route::middleware(['api', 'SetLocale'])->group(function () {
 
         // Order routes
         Route::apiResource('orders', OrderController::class);
-        Route::post('/orders/send-order-email/{devi}', [OrderController::class, 'sendOrderToEmail']);
+        Route::post('/orders/send-order-email/{order}', [OrderController::class, 'sendOrderToEmail']);
+        Route::post('/orders/store-and-publish', [OrderController::class, 'storeAndPublish']);
+        Route::patch('/orders/update-and-publish/{order}', [OrderController::class, 'updateAndPublish']);
 
+        // Facture routes
         Route::apiResource('factures', FactureController::class);
         Route::post('/factures/send-factures-email/{facture}', [FactureController::class, 'sendFactureToEmail']);
-
-
-
-
     });
 });

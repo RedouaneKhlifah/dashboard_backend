@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\Facture;
+use Illuminate\Support\Facades\Log;
 
 class FactureRepository
 {
@@ -60,22 +61,28 @@ class FactureRepository
 
     public function update(Facture $facture, array $data)
     {
+        // First update the facture model with basic data
         $facture->update($data);
-
+    
         // If products are included in the data, sync them
+
+        Log::info('products' , $data['products']);
         if (isset($data['products'])) {
             $products = collect($data['products'])->mapWithKeys(function ($item) {
+                // Ensure we're not passing facture_id in the pivot data
                 return [$item['product_id'] => [
                     'price_unitaire' => $item['price_unitaire'],
-                    'quantity' => $item['quantity']
+                    'quantity' => $item['quantity'],
+                    'order_id' => $item['order_id'] ?? null
                 ]];
             });
+            
             $facture->products()->sync($products);
         }
-
-        return $facture->load(['order.ticket', 'products']);
+    
+        // Reload the model with its relationships
+        return $facture->fresh(['order', 'products']);
     }
-
     public function delete(Facture $facture)
     {
         return $facture->delete();

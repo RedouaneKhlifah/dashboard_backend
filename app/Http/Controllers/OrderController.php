@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Events\ModelUpdated;
 use App\Http\Requests\OrderRequest;
+use App\Jobs\CreateFactureForOrderJob;
+use App\Jobs\CreateOrderForTicketJob;
 use App\Models\Order;
 use App\Services\OrderService;
 use Illuminate\Http\JsonResponse;
@@ -46,22 +48,23 @@ class OrderController extends Controller
         return response()->json($order);
     }
 
-    public function update(OrderRequest $request, Order $devi): JsonResponse
+    public function update(OrderRequest $request, Order $order): JsonResponse
     {
-        $order = $this->orderService->updateOrder($devi, $request->validated());
+        $order = $this->orderService->updateOrder($order, $request->validated());
         broadcast(new ModelUpdated($order, 'order', 'updated'));
         return $order
             ? response()->json($order)
             : response()->json(['message' => 'Order not found'], 404);
     }
 
-    public function destroy(Order $devi): JsonResponse
+    public function destroy(Order $order): JsonResponse
     {
-        $success = $this->orderService->deleteOrder($devi);
-        broadcast(new ModelUpdated($devi, 'order', 'deleted'));
+        $success = $this->orderService->deleteOrder($order);
+        broadcast(new ModelUpdated($order, 'order', 'deleted'));
         return response()->json(null, 204);
     }
-    public function sendOrderToEmail(Request $request, Order $devi)
+    
+    public function sendOrderToEmail(Request $request, Order $order)
     {
         try {
             $request->validate([
@@ -77,14 +80,15 @@ class OrderController extends Controller
     
             // Generate a unique file name using reference and current timestamp
             $timestamp = now()->timestamp;
-            $pdfFileName = 'order-' . $devi->reference . '-' . $timestamp . '.pdf';
+
+            $pdfFileName = 'order-' . $order->reference . '-' . $timestamp . '.pdf';
             $pdfPath = "public/order/" . $pdfFileName;
     
             // Store the file using Laravel's Storage
             Storage::put($pdfPath, $pdfContent);
     
             // Send email with the stored file
-            Mail::to($user->email)->send(new OrderPdfMail(Storage::path($pdfPath), $devi));
+            Mail::to($user->email)->send(new OrderPdfMail(Storage::path($pdfPath), $order));
     
             return response()->json([
                 'message' => 'Order saved and sent successfully to ' . $user->email,
@@ -102,4 +106,25 @@ class OrderController extends Controller
 
 }
     }
+
+    public function storeAndPublish(OrderRequest $request): JsonResponse
+    {
+        $order = $this->orderService->createOrder($request->validated());
+        dispatch(new CreateFactureForOrderJob($order));
+        broadcast(new ModelUpdated($order, 'order', 'created'));
+        return response()->json($order, 201);
+    }
+
+
+    public function updateAndPublish(OrderRequest $request, Order $order): JsonResponse
+    {
+        $order = $this->orderService->updateOrder($order, $request->validated());
+
+        broadcast(new ModelUpdated($order, 'order', 'updated'));
+        dispatch(new CreateFactureForOrderJob($order));
+        return $order
+            ? response()->json($order)
+            : response()->json(['message' => 'Order not found'], 404);
+    }
+
 }

@@ -15,10 +15,12 @@ class Facture extends Model
         'order_id',
         'client_id',
         'reference',
+        "facture_date",
         'expiration_date',
         'tva',
         'remise_type',
         'remise',
+        "paid_amount",
         'note',
     ];
 

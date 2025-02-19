@@ -47,22 +47,23 @@ class FactureController extends Controller
         return response()->json($facture);
     }
 
-    public function update(FactureRequest $request, Facture $devi): JsonResponse
+    public function update(FactureRequest $request, Facture $facture): JsonResponse
     {
-        $facture = $this->factureService->updateFacture($devi, $request->validated());
-        broadcast(new ModelUpdated($facture, 'facture', 'updated'));
+        log::info('Facture updated successfully', ['facture' => $facture]);
+        $facture = $this->factureService->updateFacture($facture, $request->validated());
+        // broadcast(new ModelUpdated($facture, 'facture', 'updated'));
         return $facture
             ? response()->json($facture)
             : response()->json(['message' => 'Facture not found'], 404);
     }
 
-    public function destroy(Facture $devi): JsonResponse
+    public function destroy(Facture $facture): JsonResponse
     {
-        $success = $this->factureService->deleteFacture($devi);
-        broadcast(new ModelUpdated($devi, 'facture', 'deleted'));
+        $success = $this->factureService->deleteFacture($facture);
+        broadcast(new ModelUpdated($facture, 'facture', 'deleted'));
         return response()->json(null, 204);
     }
-    public function sendFactureToEmail(Request $request, Facture $devi)
+    public function sendFactureToEmail(Request $request, Facture $facture)
     {
         try {
             $request->validate([
@@ -76,7 +77,7 @@ class FactureController extends Controller
             $pdfContent = $pdf->output();
     
             // Save PDF locally
-            $pdfFileName = 'facture-' . $devi->reference . '.pdf';
+            $pdfFileName = 'facture-' . $facture->reference . '.pdf';
             $pdfPath = storage_path('app/public/facture/' . $pdfFileName);
             
             // Ensure the directory exists
@@ -88,7 +89,7 @@ class FactureController extends Controller
             file_put_contents($pdfPath, $pdfContent);
     
             // Send email with the locally stored PDF
-            Mail::to($user->email)->send(new FacturePdfMail($pdfPath, $devi));
+            Mail::to($user->email)->send(new FacturePdfMail($pdfPath, $facture));
     
             return response()->json([
                 'message' => 'Facture sent successfully to ' . $user->email
