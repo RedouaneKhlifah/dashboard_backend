@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\OrderPdfMail;
+use Illuminate\Support\Facades\Storage;
 
 class OrderController extends Controller
 {
@@ -69,27 +70,25 @@ class OrderController extends Controller
     
             $user = Auth::user();
             $htmlContent = $request->input('htmlContent');    
+    
             // Generate PDF
             $pdf = Pdf::loadHTML($htmlContent);
             $pdfContent = $pdf->output();
     
-            // Save PDF locally
-            $pdfFileName = 'order-' . $devi->reference . '.pdf';
-            $pdfPath = storage_path('app/public/order/' . $pdfFileName);
-            
-            // Ensure the directory exists
-            if (!file_exists(dirname($pdfPath))) {
-                mkdir(dirname($pdfPath), 0755, true);
-            }
+            // Generate a unique file name using reference and current timestamp
+            $timestamp = now()->timestamp;
+            $pdfFileName = 'order-' . $devi->reference . '-' . $timestamp . '.pdf';
+            $pdfPath = "public/order/" . $pdfFileName;
     
-            // Save the PDF file
-            file_put_contents($pdfPath, $pdfContent);
+            // Store the file using Laravel's Storage
+            Storage::put($pdfPath, $pdfContent);
     
-            // Send email with the locally stored PDF
-            Mail::to($user->email)->send(new OrderPdfMail($pdfPath, $devi));
+            // Send email with the stored file
+            Mail::to($user->email)->send(new OrderPdfMail(Storage::path($pdfPath), $devi));
     
             return response()->json([
-                'message' => 'Order sent successfully to ' . $user->email
+                'message' => 'Order saved and sent successfully to ' . $user->email,
+                'file_url' => asset("storage/order/$pdfFileName") // Public URL
             ]);
     
         } catch (\Exception $e) {
@@ -100,6 +99,7 @@ class OrderController extends Controller
                 'message' => 'Failed to send order',
                 'error' => $e->getMessage()
             ], 500);
-        }
+
+}
     }
 }
