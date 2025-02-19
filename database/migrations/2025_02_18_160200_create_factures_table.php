@@ -13,10 +13,12 @@ return new class extends Migration
             $table->foreignId('order_id')->nullable()->constrained()->nullOnDelete(); 
             $table->foreignId('client_id')->nullable()->constrained()->nullOnDelete(); 
             $table->string('reference');
+            $table->date('facture_date');
             $table->date('expiration_date');
             $table->decimal('tva', 5, 2);
             $table->enum('remise_type', ['PERCENT', 'FIXED']);
             $table->decimal('remise', 10, 2);
+            $table->decimal('paid_amount' , 10, 2)->nullable();
             $table->text('note')->nullable();
             $table->softDeletes();
             $table->timestamps();

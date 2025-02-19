@@ -68,7 +68,7 @@ class OrderRepository
                 return [$item['product_id'] => [
                     'price_unitaire' => $item['price_unitaire'],
                     'quantity' => $item['quantity'],
-                    "ticket_id" => $item['ticket_id']
+                    "ticket_id" => $item['ticket_id']?? null
                 ]];
             });
             $order->products()->sync($products);

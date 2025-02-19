@@ -41,9 +41,16 @@ return new class extends Migration
      */
     public function down(): void
     {
-        // Drop the check constraint before dropping the table
-        DB::statement('ALTER TABLE tickets DROP CONSTRAINT client_id_required_for_exit');
-
+        // Disable foreign key checks
+        DB::statement('SET FOREIGN_KEY_CHECKS = 0');
+        
+        // Optionally, if you need to drop a check constraint and your MySQL version supports it,
+        // use the DROP CHECK syntax. (Otherwise, you may omit this if the table is being dropped.)
+        // DB::statement('ALTER TABLE tickets DROP CHECK client_id_required_for_exit');
+        
         Schema::dropIfExists('tickets');
+        
+        // Re-enable foreign key checks
+        DB::statement('SET FOREIGN_KEY_CHECKS = 1');
     }
 };
