@@ -80,6 +80,7 @@ class OrderController extends Controller
     
             // Generate a unique file name using reference and current timestamp
             $timestamp = now()->timestamp;
+
             $pdfFileName = 'order-' . $order->reference . '-' . $timestamp . '.pdf';
             $pdfPath = "public/order/" . $pdfFileName;
     
@@ -102,7 +103,8 @@ class OrderController extends Controller
                 'message' => 'Failed to send order',
                 'error' => $e->getMessage()
             ], 500);
-        }
+
+}
     }
 
     public function storeAndPublish(OrderRequest $request): JsonResponse
