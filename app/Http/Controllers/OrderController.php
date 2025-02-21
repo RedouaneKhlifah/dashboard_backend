@@ -121,7 +121,7 @@ class OrderController extends Controller
         $order = $this->orderService->updateOrder($order, $request->validated());
 
         broadcast(new ModelUpdated($order, 'order', 'updated'));
-        dispatch(new CreateFactureForOrderJob($order));
+        dispatch(new CreateFactureForOrderJob($order ));
         return $order
             ? response()->json($order)
             : response()->json(['message' => 'Order not found'], 404);

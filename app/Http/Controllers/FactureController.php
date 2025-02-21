@@ -41,8 +41,6 @@ class FactureController extends Controller
 
     public function show(Facture $facture): JsonResponse
     {
-        Log::info('Facture retrieved successfully', ['facture' => $facture]);
-
         $facture = $this->factureService->getFacture($facture);
         return response()->json($facture);
     }
@@ -51,7 +49,7 @@ class FactureController extends Controller
     {
         log::info('Facture updated successfully', ['facture' => $facture]);
         $facture = $this->factureService->updateFacture($facture, $request->validated());
-        // broadcast(new ModelUpdated($facture, 'facture', 'updated'));
+        broadcast(new ModelUpdated($facture, 'facture', 'updated'));
         return $facture
             ? response()->json($facture)
             : response()->json(['message' => 'Facture not found'], 404);

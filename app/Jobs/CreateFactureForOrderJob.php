@@ -2,8 +2,11 @@
 
 namespace App\Jobs;
 
+use App\Events\ModelUpdated;
 use App\Models\Facture;
 use App\Models\Order;
+use App\Services\FactureService;
+use App\Services\SharedService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -18,26 +21,22 @@ class CreateFactureForOrderJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $order;
-
+    protected $order;  
+    protected $sharedService;  
     /**
      * Create a new job instance.
      */
-    public function __construct(Order $order)
+    public function __construct(Order $order )
     {
         $this->order = $order;
+        $this->sharedService = new SharedService();
     }
 
-
-    
     /**
      * Execute the job.
      */
     public function handle()
-    
     {
-        Log::info('CreateFactureForOrderJob 00000000' . $this->order);
-
         // Create a order usin
         // g data from the order.
         $facture = Facture::create([
@@ -50,6 +49,7 @@ class CreateFactureForOrderJob implements ShouldQueue
             'remise_type'     => $this->order->remise_type,
             'remise'          => $this->order->remise,
             'note'            => $this->order->note,
+            "paid_amount"     => 0,
         ]);
         
         foreach ($this->order->products as $product) {
@@ -60,7 +60,12 @@ class CreateFactureForOrderJob implements ShouldQueue
             ]);
         }
 
-        Log::info('Facture created successfully for order: ' . $facture);
+        $facture = $facture->load(['products' , 'order', 'client']);
+
+        $facture = $this->sharedService->formatProducts($facture);
+
+        broadcast(new ModelUpdated($facture, 'facture', 'created'));
+
 
     }
 }

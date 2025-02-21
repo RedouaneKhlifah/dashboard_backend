@@ -2,8 +2,11 @@
 
 namespace App\Jobs;
 
+use App\Events\ModelUpdated;
 use App\Models\Ticket;
 use App\Models\Order;
+use App\Services\OrderService;
+use App\Services\SharedService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -16,6 +19,7 @@ class CreateOrderForTicketJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $ticket;
+    protected $sharedService;
 
     /**
      * Create a new job instance.
@@ -23,6 +27,7 @@ class CreateOrderForTicketJob implements ShouldQueue
     public function __construct(Ticket $ticket)
     {
         $this->ticket = $ticket;
+        $this->sharedService = new SharedService();
     }
 
     /**
@@ -53,5 +58,10 @@ class CreateOrderForTicketJob implements ShouldQueue
                 'ticket_id'      => $this->ticket->id
 
             ]);
+
+            $order = $this->sharedService->formatProducts($order);
+
+            broadcast(new ModelUpdated($order, 'order', 'deleted'));
+
     }
 }

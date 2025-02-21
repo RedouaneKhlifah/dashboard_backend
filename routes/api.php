@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\FactureController;
 use App\Http\Controllers\PartenaireController;
@@ -43,5 +44,8 @@ Route::middleware(['api', 'SetLocale'])->group(function () {
         // Facture routes
         Route::apiResource('factures', FactureController::class);
         Route::post('/factures/send-factures-email/{facture}', [FactureController::class, 'sendFactureToEmail']);
+
+        // Employee routes
+        Route::apiResource('employees', EmployeeController::class);
     });
 });

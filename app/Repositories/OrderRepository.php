@@ -55,7 +55,7 @@ class OrderRepository
             $order->products()->attach($products);
         }
 
-        return $order->load(['ticket', 'products']);
+        return $order->load(['ticket', 'products' , 'client']);
     }
 
     public function update(Order $order, array $data)
@@ -74,7 +74,7 @@ class OrderRepository
             $order->products()->sync($products);
         }
 
-        return $order->load(['ticket', 'products']);
+        return $order->load(['ticket', 'products' , 'client']);
     }
 
     public function delete(Order $order)

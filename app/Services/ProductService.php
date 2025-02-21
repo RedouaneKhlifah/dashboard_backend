@@ -152,4 +152,6 @@ class ProductService
         // Delete image records from the database
         $product->images()->delete();
     }
+
+    
 }

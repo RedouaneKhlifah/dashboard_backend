@@ -56,7 +56,7 @@ class FactureRepository
             $facture->products()->attach($products);
         }
 
-        return $facture->load(['products']);
+        return $facture->load(['products' , 'order', 'client']);
     }
 
     public function update(Facture $facture, array $data)
@@ -65,8 +65,6 @@ class FactureRepository
         $facture->update($data);
     
         // If products are included in the data, sync them
-
-        Log::info('products' , $data['products']);
         if (isset($data['products'])) {
             $products = collect($data['products'])->mapWithKeys(function ($item) {
                 // Ensure we're not passing facture_id in the pivot data
@@ -81,7 +79,7 @@ class FactureRepository
         }
     
         // Reload the model with its relationships
-        return $facture->fresh(['order', 'products']);
+        return $facture->fresh(['order', 'products' ,'client']);
     }
     public function delete(Facture $facture)
     {
