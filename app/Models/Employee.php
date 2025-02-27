@@ -10,16 +10,16 @@ class Employee extends Model
     use HasFactory;
 
     protected $fillable = [
-        "employee_id",
+        "matricule",
         'first_name',
         'last_name',
         'national_id',
         'address',
         'city',
         'date_of_engagement',
-        'monthly_salary',
         'price_per_hour',
-        'price_per_day',
+        "cnss_number", // optional
+        "birth_date", // optional
     ];
 
     // Ensure full_name is always included when retrieving the model

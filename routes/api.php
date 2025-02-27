@@ -8,6 +8,7 @@ use App\Http\Controllers\FactureController;
 use App\Http\Controllers\PartenaireController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\TicketController;
+use App\Http\Controllers\TransactionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -47,5 +48,8 @@ Route::middleware(['api', 'SetLocale'])->group(function () {
 
         // Employee routes
         Route::apiResource('employees', EmployeeController::class);
+
+        // transaction routes
+        Route::apiResource('/transactions', TransactionController::class);
     });
 });
