@@ -19,8 +19,7 @@ class PartenaireRepository
 
         if ($searchTerm) {
             $query->where(function ($q) use ($searchTerm) {
-                $q->where('name', 'like', "%{$searchTerm}%")
-                  ->orWhere('matricule', 'like', "%{$searchTerm}%");
+                $q->where('name', 'like', "%{$searchTerm}%");
             });
         }
     

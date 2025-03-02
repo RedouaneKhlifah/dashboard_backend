@@ -48,6 +48,9 @@ Route::middleware(['api', 'SetLocale'])->group(function () {
 
         // Employee routes
         Route::apiResource('employees', EmployeeController::class);
+        Route::post('/employees/history-of-pay', [EmployeeController::class, 'StoreHistoryOfPay']);
+        Route::get('/employees/history-of-pay/{employee}', [EmployeeController::class, 'getEmployeeHistoryOfPay']);
+
 
         // transaction routes
         Route::apiResource('/transactions', TransactionController::class);

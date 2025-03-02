@@ -4,10 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Events\ModelUpdated;
 use App\Http\Requests\EmployeeRequest;
+
 use App\Models\Employee;
 use App\Services\EmployeeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+
 
 class EmployeeController extends Controller
 {
@@ -51,5 +54,36 @@ class EmployeeController extends Controller
         $this->employeeService->deleteEmployee($employee);
         broadcast(new ModelUpdated($employee, 'employee', 'deleted'));
         return response()->json(null, 204);
+    }
+
+    public function StoreHistoryOfPay(request $request)
+    {
+        try {
+            Log::info('Processing payment history request', $request->all());
+            // Process the data
+            $processedData = $this->employeeService->processPayData($request->all());
+
+            $this->employeeService->storeEmployeePayHistory($processedData);
+            
+            // Store in repository
+            return response()->json([
+                'message' => 'Payment history stored successfully',
+                'data' => $processedData
+            ], 201);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error processing request',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+            
+    }
+
+    public function getEmployeeHistoryOfPay(Employee $employee)
+    {
+        $employee = $employee->load('paymentHistories');
+
+        return response()->json($employee);
     }
 }

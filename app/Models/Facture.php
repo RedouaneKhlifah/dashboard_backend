@@ -24,7 +24,7 @@ class Facture extends Model
         'note',
     ];
 
-    protected $appends = ['total']; // Adds total to the JSON output
+    protected $appends = ['total' , 'status']; // Adds total to the JSON output
 
     /**
      * Relationships
@@ -74,5 +74,20 @@ class Facture extends Model
         // Final total after applying the remise
         return round($totalTTC - $remiseAmount, 2);
     }
+
+    public function getStatusAttribute()
+    {
+        if(is_null($this->paid_amount)){
+            return trans("facture.statuses.unpaid");
+        }elseif($this->paid_amount == 0){
+            return trans("facture.statuses.unpaid");
+        }elseif($this->paid_amount < $this->total){ 
+            return trans("facture.statuses.partially_paid");
+        }else{
+            return trans("facture.statuses.paid");
+        }
+    }
+
+
     
 }

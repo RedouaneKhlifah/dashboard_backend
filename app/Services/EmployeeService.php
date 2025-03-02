@@ -38,4 +38,31 @@ class EmployeeService
     {
         return $this->repository->delete($employee);
     }
+
+    public function processPayData(array $data): array
+    {
+        $collection = collect($data);
+        
+        // Group by employee matricule
+        $grouped = $collection->groupBy('matricule');
+
+        return $grouped->map(function ($entries, $matricule) {
+            $employee = Employee::where('matricule', $matricule)->firstOrFail();
+            
+            $dates = $entries->pluck('date')->sort();
+            
+            return [
+                'employee_id' => $employee->id,
+                'total_hours' => $entries->sum('presence'),
+                'start_date' => $dates->first(),
+                'end_date' => $dates->last(),
+                'total_gain' => $entries->sum('presence') * $employee->price_per_hour
+            ];
+        })->values()->all();
+    }
+
+    public function storeEmployeePayHistory(array $processedData)
+    {
+        return $this->repository->storeHistory($processedData);
+    }
 }

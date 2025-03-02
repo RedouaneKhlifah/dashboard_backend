@@ -17,7 +17,12 @@ class EmployeeRequest extends FormRequest
         $employeeId = $this->route('employee') ? $this->route('employee')->id : null;
 
         return [
-            'employee_id'          => 'required|string|max:255',
+            'matricule'          => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('employees', 'matricule')->ignore($employeeId)
+            ],
             'last_name'           => 'required|string|max:255',
             'first_name'          => 'required|string|max:255',
             'national_id'         => [
@@ -26,12 +31,18 @@ class EmployeeRequest extends FormRequest
                 'max:255',
                 Rule::unique('employees', 'national_id')->ignore($employeeId)
             ],
+            
             'address'             => 'required|string|max:255',
             'city'                => 'required|string|max:255',
             'date_of_engagement'  => 'required|date',
-            'monthly_salary'      => 'required|numeric',
             'price_per_hour'      => 'required|numeric',
-            'price_per_day'       => 'required|numeric',
+            "cnss_number"         => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('employees', 'cnss_number')->ignore($employeeId)
+            ],
+            "birth_date"          => 'required|date',
         ];
     }
 

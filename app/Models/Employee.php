@@ -30,4 +30,10 @@ class Employee extends Model
     {
         return "{$this->first_name} {$this->last_name}";
     }
+
+    public function paymentHistories()
+    {
+        return $this->hasMany(HistoryOfPay::class);
+    }
+
 }

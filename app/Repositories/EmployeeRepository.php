@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\Employee;
+use App\Models\HistoryOfPay;
 
 class EmployeeRepository
 {
@@ -47,5 +48,21 @@ class EmployeeRepository
     public function delete(Employee $employee)
     {
         return $employee->delete();
+    }
+
+    public function storeHistory(array $processedData)
+    {
+        foreach ($processedData as $data) {
+            HistoryOfPay::updateOrCreate(
+                [
+                    'employee_id' => $data['employee_id'],
+                    'start_date' => $data['start_date'],
+                    'end_date' => $data['end_date'],
+                    "total_hours" => $data['total_hours'],
+                    "total_gain" => $data['total_gain'],
+                ],
+                $data
+            );
+        }
     }
 }
