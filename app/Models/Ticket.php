@@ -32,6 +32,15 @@ class Ticket extends Model
         'status' => StatusEnum::class,
     ];
 
+    // append poids_net attribute
+    protected $appends = ['poids_net'];
+
+    // Define the poids_net attribute
+    public function getPoidsNetAttribute()
+    {
+        return $this->poids_brut - $this->poids_tare;
+    }
+
     /**
      * Get the partenaire associated with the ticket.
      */

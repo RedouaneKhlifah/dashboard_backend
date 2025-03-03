@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Events\ModelUpdated;
 use App\Http\Requests\PartenaireRequest;
+use App\Http\Requests\GetPartenaireTicketsRequest;
 use App\Models\Partenaire;
 use App\Services\PartenaireService;
 use Illuminate\Http\JsonResponse;
@@ -52,5 +53,14 @@ class PartenaireController extends Controller
         $this->partenaireService->deletePartenaire($partenaire);
         broadcast(new ModelUpdated($partenaire, 'partenaire', 'deleted'));
         return response()->json(null, 204);
+    }
+
+    public function  getTicketsWithSum(GetPartenaireTicketsRequest $request , $partenaire): JsonResponse
+    {
+        $validatedData = $request->validated();
+        $validatedData['partenaire_id'] = $partenaire;
+
+        $partenaire = $this->partenaireService->getPartenaireTicketsWithSum($validatedData);
+        return response()->json($partenaire);
     }
 }

@@ -3,6 +3,8 @@
 namespace App\Repositories;
 
 use App\Models\Ticket;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class TicketRepository
 {
@@ -59,5 +61,31 @@ class TicketRepository
     public function delete(Ticket $ticket)
     {
         return $ticket->delete();
+    }
+
+    public function getTicketsWithSum(
+        int $partenaireId, 
+        ?string $startDate = null, 
+        ?string $endDate = null
+    ): array
+    {
+        // Convert dates to proper format with full-day coverage
+        $startDate = $startDate ? Carbon::parse($startDate)->startOfDay()->toDateTimeString() : null;
+        $endDate = $endDate ? Carbon::parse($endDate)->endOfDay()->toDateTimeString() : null;
+    
+        $baseQuery = Ticket::where('partenaire_id', $partenaireId)
+            ->whereNull('deleted_at')
+            ->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
+                return $query->whereBetween('created_at', [$startDate, $endDate]);
+            })->with('product');
+    
+        // Clone the query before executing to get both results
+        $totalQuery = clone $baseQuery;
+    
+        return [
+            'tickets' => $baseQuery->orderBy('created_at', 'desc')->get(),
+            'total_poids_net' => $totalQuery->sum(DB::raw('poids_brut - poids_tare')),
+            "product" => $totalQuery->first()?->product
+        ];
     }
 }

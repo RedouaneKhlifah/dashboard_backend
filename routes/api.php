@@ -31,7 +31,10 @@ Route::middleware(['api', 'SetLocale'])->group(function () {
 
         // Api Resources  
         Route::apiResource('clients', ClientController::class);
+        // Partenaire routes
         Route::apiResource('partenaires', PartenaireController::class);
+        Route::get('/partenaires/{partenaire}/tickets', [PartenaireController::class, 'getTicketsWithSum']);
+
         Route::post('/products/{product}', [ProductController::class, 'update']);
         Route::apiResource('products', ProductController::class);
         Route::apiResource('tickets', TicketController::class);
