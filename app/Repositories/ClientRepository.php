@@ -3,6 +3,8 @@
 namespace App\Repositories;
 
 use App\Models\Client;
+use Illuminate\Support\Facades\DB;
+
 
 class ClientRepository
 {
@@ -19,8 +21,9 @@ class ClientRepository
     
         if ($searchTerm) {
             $query->where(function ($q) use ($searchTerm) {
-                $q->where('first_name', 'like', "%{$searchTerm}%")
-                  ->orWhere('last_name', 'like', "%{$searchTerm}%");
+                $q->where('first_name', 'like', "%{$searchTerm}%");
+                  $q->orWhere('last_name', 'like', "%{$searchTerm}%")
+                  ->orWhere(DB::raw("CONCAT(first_name, ' ', last_name)"), 'like', "%{$searchTerm}%");
             });
         }
     
