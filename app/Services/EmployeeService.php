@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Employee;
 use App\Repositories\EmployeeRepository;
+use Illuminate\Support\Facades\Log;
 
 class EmployeeService
 {
@@ -47,8 +48,12 @@ class EmployeeService
         $grouped = $collection->groupBy('matricule');
 
         return $grouped->map(function ($entries, $matricule) {
-            $employee = Employee::where('matricule', $matricule)->firstOrFail();
+            $employee = Employee::where('matricule', $matricule)->first();
             
+            if (!$employee) {
+                return null; // Return null for invalid matricules
+            }
+
             $dates = $entries->pluck('date')->sort();
             
             return [
@@ -56,9 +61,9 @@ class EmployeeService
                 'total_hours' => $entries->sum('presence'),
                 'start_date' => $dates->first(),
                 'end_date' => $dates->last(),
-                'total_gain' => $entries->sum('presence') * $employee->price_per_hour
+                'total_gain' => $entries->sum(fn($entry) => (float) $entry['presence']) * (float) $employee->price_per_hour,
             ];
-        })->values()->all();
+        })->filter()->values()->all(); // Filter out null values
     }
 
     public function storeEmployeePayHistory(array $processedData)

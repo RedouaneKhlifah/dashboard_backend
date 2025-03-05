@@ -44,13 +44,13 @@ class Transaction extends Model
         // Try to get the balance from the cache
         return cache()->remember('total_balance', 60, function () {
             // Sum of all debit transactions
-            $debitTotal = self::where('type', self::TYPE_DEBIT)->sum('amount');
+            $debitTotal = self::where('type', self::TYPE_DEBIT)->sum(column: 'amount');
             
             // Sum of all credit transactions
             $creditTotal = self::where('type', self::TYPE_CREDIT)->sum('amount');
             
             // Return the difference between debits and credits (balance)
-            return $creditTotal - $debitTotal;
+            return  $debitTotal - $creditTotal ;
         });
     }
     

@@ -9,6 +9,7 @@ use App\Models\Employee;
 use App\Services\EmployeeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Http\Requests\HistoryOfPayRequest;
 use Illuminate\Support\Facades\Log;
 
 
@@ -56,28 +57,48 @@ class EmployeeController extends Controller
         return response()->json(null, 204);
     }
 
-    public function StoreHistoryOfPay(request $request)
+    public function StoreHistoryOfPay(HistoryOfPayRequest $request)
     {
         try {
-            Log::info('Processing payment history request', $request->all());
-            // Process the data
-            $processedData = $this->employeeService->processPayData($request->all());
-
+            $data = $request->all();
+            $validMatricules = [];
+            $invalidMatricules = [];
+    
+            // Check each matricule
+            foreach ($data as $entry) {
+                $matricule = $entry['matricule'];
+                if (Employee::where('matricule', $matricule)->exists()) {
+                    if (!in_array($matricule, $validMatricules)) {
+                        $validMatricules[] = $matricule;
+                    }
+                } else {
+                    if (!in_array($matricule, $invalidMatricules)) {
+                        $invalidMatricules[] = $matricule;
+                    }
+                }
+            }
+    
+            // Process only valid matricules
+            $filteredData = array_filter($data, function ($entry) use ($validMatricules) {
+                return in_array($entry['matricule'], $validMatricules);
+            });
+    
+            $processedData = $this->employeeService->processPayData($filteredData);
             $this->employeeService->storeEmployeePayHistory($processedData);
-            
-            // Store in repository
+    
             return response()->json([
-                'message' => 'Payment history stored successfully',
+                'message' => 'Payment history processed successfully',
+                'valid_matricules' => $validMatricules,
+                'invalid_matricules' => $invalidMatricules,
                 'data' => $processedData
             ], 201);
-
+    
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Error processing request',
                 'error' => $e->getMessage()
             ], 500);
         }
-            
     }
 
     public function getEmployeeHistoryOfPay(Employee $employee)

@@ -19,14 +19,9 @@ class HistoryOfPayRequest extends FormRequest
         return [
             '*.matricule' => [
                 'required',
-                'string',
-                function ($attribute, $value, $fail) {
-                    if (!Employee::where('matricule', $value)->exists()) {
-                        $fail("The employee with matricule $value does not exist.");
-                    }
-                }
+                'string'
             ],
-            '*.date' => 'required|date',
+            '*.date' => 'required|date_format:d/m/Y',
             '*.presence' => 'required|string',
         ];
     }

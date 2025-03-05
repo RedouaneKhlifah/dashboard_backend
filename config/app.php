@@ -159,7 +159,9 @@ return [
     // Application Service Providers...
     App\Providers\AppServiceProvider::class,
     App\Providers\BroadcastServiceProvider::class,
-    Maatwebsite\Excel\ExcelServiceProvider::class
+    Maatwebsite\Excel\ExcelServiceProvider::class,
+    App\Providers\ReverbServiceProvider::class,
+
 ],
 
 ];
