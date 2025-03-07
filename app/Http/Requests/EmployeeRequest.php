@@ -36,12 +36,6 @@ class EmployeeRequest extends FormRequest
             'city'                => 'required|string|max:255',
             'date_of_engagement'  => 'required|date',
             'price_per_hour'      => 'required|numeric',
-            "cnss_number"         => [
-                'required',
-                'string',
-                'max:255',
-                Rule::unique('employees', 'cnss_number')->ignore($employeeId)
-            ],
             "birth_date"          => 'required|date',
         ];
     }
