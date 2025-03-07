@@ -3,7 +3,8 @@
 namespace App\Repositories;
 
 use App\Models\Facture;
-use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
+use Log;
 
 class FactureRepository
 {
@@ -84,5 +85,51 @@ class FactureRepository
     public function delete(Facture $facture)
     {
         return $facture->delete();
+    }
+
+    public function getPartialStatusData($startDate, $endDate): array
+    {
+        $factures = Facture::with('products')
+            ->whereBetween('facture_date', [$startDate, $endDate])
+            ->get()
+            ->filter(function ($facture) {
+                return  $facture->paid_amount > 0 && ($facture->paid_amount < $facture->totals);
+            });
+
+
+
+        return [
+            'total' => $factures->sum('totals'),
+            'paid_amount' => $factures->sum('paid_amount')
+        ];
+    }
+
+    public function getPaidPartialCompleteSum($startDate, $endDate): float
+    {
+        return Facture::with('products')
+            ->whereBetween('facture_date', [$startDate, $endDate])
+            ->get()
+            ->filter(function ($facture) {
+                return $facture->paid_amount > 0;
+            })
+            ->sum('paid_amount');
+    }
+
+    public function getProfit($startDate, $endDate): float
+    {
+        return Facture::with(['products' => fn($q) => $q->withTrashed()])
+            ->whereBetween('facture_date', [$startDate, $endDate])
+            ->get()
+            ->flatMap(fn(Facture $facture) => $facture->products->map(fn($product) => [
+                'profit' => ($product->sale_price - $product->base_price) * $product->pivot->quantity
+            ]))
+            ->sum('profit');
+    }
+
+    public function getRevenue($startDate, $endDate): float
+    {
+        return Facture::whereBetween('facture_date', [$startDate, $endDate])
+            ->get()
+            ->sum('totals');
     }
 }

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\FactureController;
@@ -57,5 +58,8 @@ Route::middleware(['api', 'SetLocale'])->group(function () {
 
         // transaction routes
         Route::apiResource('/transactions', TransactionController::class);
+
+        // dashboard routes
+        Route::get('/dashboard', [DashboardController::class, 'index']);
     });
 });

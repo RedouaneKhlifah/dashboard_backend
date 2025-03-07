@@ -40,11 +40,6 @@ class ProductService
             // Create the product
             $product = $this->repository->create($data);
     
-            // Handle image upload
-            if ( !is_null($imageFiles) && count($imageFiles) > 0) {
-                $this->storeImages($product, $imageFiles);
-            }
-    
             // Commit the transaction
             DB::commit();
     
@@ -61,13 +56,7 @@ class ProductService
         DB::beginTransaction();
     
         try {
-            $this->deleteImages($product);
-
-            Log::info('Images deleted', is_array($imageFiles) ? $imageFiles : []);
-            // Store the new images
-            if ($imageFiles && count($imageFiles) > 0) {
-                $this->storeImages($product, $imageFiles);
-            }    
+            $this->deleteImages($product);    
             // Update the product
             $updatedProduct = $this->repository->update($product, $data);
     

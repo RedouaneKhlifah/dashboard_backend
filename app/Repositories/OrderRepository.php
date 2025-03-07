@@ -3,6 +3,8 @@
 namespace App\Repositories;
 
 use App\Models\Order;
+use App\Models\Product;
+use Illuminate\Support\Facades\DB;
 
 class OrderRepository
 {
@@ -80,5 +82,29 @@ class OrderRepository
     public function delete(Order $order)
     {
         return $order->delete();
+    }
+
+    public function getTopProductsBySoldQuantity($startDate, $endDate): array
+    {
+    return Product::withTrashed()
+        ->select([
+            'products.id',
+            'products.name',
+            DB::raw('SUM(order_product.quantity) as total_sold')
+        ])
+        ->join('order_product', 'products.id', '=', 'order_product.product_id')
+        ->join('orders', 'orders.id', '=', 'order_product.order_id')
+        ->whereBetween('orders.order_date', [$startDate, $endDate])
+        ->groupBy('products.id', 'products.name')
+        ->orderByDesc('total_sold')
+        ->limit(10)
+        ->get()
+        ->map(function ($product) {
+            return [
+                'name' => $product->name,
+                'total_quantity' => (float) $product->total_sold
+            ];
+        })
+        ->toArray();
     }
 }

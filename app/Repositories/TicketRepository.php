@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Models\Ticket;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class TicketRepository
 {
@@ -77,6 +78,7 @@ class TicketRepository
     
         $baseQuery = Ticket::where('partenaire_id', $partenaireId)
             ->whereNull('deleted_at')
+            ->where('status', Ticket::STATUS_ENTRY)
             ->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
                 return $query->whereBetween('created_at', [$startDate, $endDate]);
             })->with('product');
@@ -89,5 +91,39 @@ class TicketRepository
             'total_poids_net' => $totalQuery->sum(DB::raw('poids_brut - poids_tare')),
             "product" => $totalQuery->first()?->product
         ];
+    }
+
+    public function getNetEntryExit($startDate, $endDate): array
+    {
+
+        return [
+            'entry' => Ticket::where('status', Ticket::STATUS_ENTRY)
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->sum(DB::raw('poids_brut - poids_tare')),
+
+            'exit' => Ticket::where('status', Ticket::STATUS_EXIT)
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->sum(DB::raw('poids_brut - poids_tare'))
+        ];
+    }
+    public function getTopPartenairesByNetWeight($startDate, $endDate): array
+    {
+        $results = Ticket::with(['partenaire' => fn($q) => $q->withTrashed()])
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->selectRaw('partenaire_id, SUM(poids_brut - poids_tare) as total_net')
+            ->groupBy('partenaire_id')
+            ->orderByDesc('total_net')
+            ->limit(10)
+            ->get();
+
+        return $results->map(function ($item) {
+            if (!$item->partenaire) return null;
+            
+            return [
+                'matricule' => $item->partenaire->matricule,
+                'name' => $item->partenaire->name,
+                'total_net' => $item->total_net
+            ];
+        })->filter()->values()->toArray();
     }
 }

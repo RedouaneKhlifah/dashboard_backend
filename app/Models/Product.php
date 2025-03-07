@@ -31,40 +31,12 @@ class Product extends Model
         'reorder_point'      => 'decimal:2',
     ];
 
-    protected $appends = ['image']; // Appending image attribute to model
-
     /**
      * Get all of the product's images.
      */
     public function images()
     {
         return $this->morphMany(Image::class, 'imageable');
-    }
-
-    /**
-     * Automatically create images for the product.
-     *
-     * @param array $imageUrls Array of image URLs to be saved.
-     * @return void
-     */
-    public function createImages(array $imageUrls)
-    {
-        foreach ($imageUrls as $index => $url) {
-            $this->images()->create([
-                'url' => $url,
-                'position' => $index + 1,
-            ]);
-        }
-    }
-
-    /**
-     * Get the first image of the product.
-     *
-     * @return string|null
-     */
-    public function getImageAttribute()
-    {
-        return "https://images.lifesizecustomcutouts.com/image/cache/catalog/febProds21/SP000069-500x500.png";
     }
 
     public function getDescriptionAttribute($value)

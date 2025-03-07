@@ -49,7 +49,7 @@ class CreateFactureForOrderJob implements ShouldQueue
             'remise_type'     => $this->order->remise_type,
             'remise'          => $this->order->remise,
             'note'            => $this->order->note,
-            "paid_amount"     => 0,
+            "paid_amount"     => null,
         ]);
         
         foreach ($this->order->products as $product) {
