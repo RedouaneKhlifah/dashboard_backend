@@ -60,6 +60,6 @@ Route::middleware(['api', 'SetLocale'])->group(function () {
         Route::apiResource('/transactions', TransactionController::class);
 
         // dashboard routes
-        Route::get('/dashboard', [DashboardController::class, 'index']);
+        Route::get('/dashboard/{start_date?}/{end_date?}', [DashboardController::class, 'index']);
     });
 });

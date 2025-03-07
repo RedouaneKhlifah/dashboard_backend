@@ -17,10 +17,10 @@ class DashboardController extends Controller
         $this->dashboardService = $dashboardService;
     }
 
-    public function index(Request $request): JsonResponse
+    public function index(Request $request, $start_date = null, $end_date = null)
     {
-        $endDate = $request->input('end_date', Carbon::today());
-        $startDate = $request->input('start_date', Carbon::parse($endDate)->subMonth());
+        $endDate = $end_date ? Carbon::parse($end_date) : Carbon::today();
+        $startDate = $start_date ? Carbon::parse($start_date) : Carbon::parse($endDate)->subMonth();
 
         $data = $this->dashboardService->getDashboardData($startDate, $endDate);
 
