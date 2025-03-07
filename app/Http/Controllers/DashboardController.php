@@ -22,6 +22,7 @@ class DashboardController extends Controller
         $endDate = $end_date ? Carbon::parse($end_date) : Carbon::today();
         $startDate = $start_date ? Carbon::parse($start_date) : Carbon::parse($endDate)->subMonth();
 
+
         $data = $this->dashboardService->getDashboardData($startDate, $endDate);
 
         return response()->json($data);

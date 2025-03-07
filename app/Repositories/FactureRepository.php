@@ -116,15 +116,17 @@ class FactureRepository
     }
 
     public function getProfit($startDate, $endDate): float
-    {
+    {     
+        $revenue = $this->getRevenue($startDate, $endDate);
         return Facture::with(['products' => fn($q) => $q->withTrashed()])
             ->whereBetween('facture_date', [$startDate, $endDate])
             ->get()
             ->flatMap(fn(Facture $facture) => $facture->products->map(fn($product) => [
-                'profit' => ($product->sale_price - $product->base_price) * $product->pivot->quantity
+                'profit' => $revenue - (($product->cost_price ) * $product->pivot->quantity)
             ]))
             ->sum('profit');
     }
+
 
     public function getRevenue($startDate, $endDate): float
     {
@@ -132,4 +134,21 @@ class FactureRepository
             ->get()
             ->sum('totals');
     }
+
+    public function getFacturesForChart($startDate, $endDate): array
+    {
+        // Get all factures between the provided start and end date
+        $factures = Facture::whereBetween('facture_date', [$startDate, $endDate])
+            ->get()
+            ->map(function ($facture) {
+                return [
+                    'date' => $facture->facture_date, // format the date to YYYY-MM-DD
+                    'value' => $facture->totals, // or any other relevant metric for the chart
+                ];
+            });
+
+        return $factures->toArray(); // Return the result in the required format for the chart
+    }
+
+
 }

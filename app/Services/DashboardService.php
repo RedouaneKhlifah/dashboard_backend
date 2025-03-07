@@ -33,7 +33,8 @@ class DashboardService
             'profit' => $this->factureRepo->getProfit($startDate, $endDate),
             'revenue' => $this->factureRepo->getRevenue($startDate, $endDate),
             'top_partenaires' => $this->ticketRepo->getTopPartenairesByNetWeight($startDate, $endDate),
-            'top_products_by_quantity' => $this->orderRepo->getTopProductsBySoldQuantity($startDate, $endDate)
+            'top_products_by_quantity' => $this->orderRepo->getTopProductsBySoldQuantity($startDate, $endDate),
+            'facturesForChart' => $this->factureRepo->getFacturesForChart($startDate, $endDate)
         ];
     }
 }
