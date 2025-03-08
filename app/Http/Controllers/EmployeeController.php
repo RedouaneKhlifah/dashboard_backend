@@ -59,11 +59,14 @@ class EmployeeController extends Controller
 
     public function StoreHistoryOfPay(HistoryOfPayRequest $request)
     {
+
+        Log::info('Processing payment history request' , $request->all());
+
         try {
             $data = $request->all();
             $validMatricules = [];
             $invalidMatricules = [];
-    
+            
             // Check each matricule
             foreach ($data as $entry) {
                 $matricule = $entry['matricule'];
