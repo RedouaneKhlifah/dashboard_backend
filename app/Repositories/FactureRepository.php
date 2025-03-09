@@ -132,6 +132,9 @@ class FactureRepository
     {
         return Facture::whereBetween('facture_date', [$startDate, $endDate])
             ->get()
+        ->filter(function ($facture) {
+                return $facture->paid_amount > 0;
+            })
             ->sum('totals');
     }
 
