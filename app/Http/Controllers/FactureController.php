@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Events\ModelUpdated;
 use App\Http\Requests\FactureRequest;
+use App\Jobs\UpdateProductStockFromFacture;
 use App\Models\Facture;
 use App\Services\FactureService;
 use Illuminate\Http\JsonResponse;
@@ -36,6 +37,8 @@ class FactureController extends Controller
     {
         $facture = $this->factureService->createFacture($request->validated());
         broadcast(new ModelUpdated($facture, 'facture', 'created'));
+        UpdateProductStockFromFacture::dispatch($facture, 'subtract');
+
         return response()->json($facture, 201);
     }
 
@@ -58,6 +61,8 @@ class FactureController extends Controller
     public function destroy(Facture $facture): JsonResponse
     {
         $success = $this->factureService->deleteFacture($facture);
+        UpdateProductStockFromFacture::dispatch($facture->load( 'products'), 'add');
+
         broadcast(new ModelUpdated($facture, 'facture', 'deleted'));
         return response()->json(null, 204);
     }

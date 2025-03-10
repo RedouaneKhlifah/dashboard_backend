@@ -90,7 +90,7 @@ class FactureRepository
     public function getPartialStatusData($startDate, $endDate): array
     {
         $factures = Facture::with('products')
-            ->whereBetween('facture_date', [$startDate, $endDate])
+            ->whereBetween('created_at', [$startDate, $endDate])
             ->get()
             ->filter(function ($facture) {
                 return  $facture->paid_amount > 0 && ($facture->paid_amount < $facture->totals);
@@ -107,7 +107,7 @@ class FactureRepository
     public function getPaidPartialCompleteSum($startDate, $endDate): float
     {
         return Facture::with('products')
-            ->whereBetween('facture_date', [$startDate, $endDate])
+            ->whereBetween('created_at', [$startDate, $endDate])
             ->get()
             ->filter(function ($facture) {
                 return $facture->paid_amount > 0;
@@ -119,7 +119,7 @@ class FactureRepository
     {     
         $revenue = $this->getRevenue($startDate, $endDate);
         return Facture::with(['products' => fn($q) => $q->withTrashed()])
-            ->whereBetween('facture_date', [$startDate, $endDate])
+            ->whereBetween('created_at', [$startDate, $endDate])
             ->get()
             ->flatMap(fn(Facture $facture) => $facture->products->map(fn($product) => [
                 'profit' => $revenue - (($product->cost_price ) * $product->pivot->quantity)
@@ -130,7 +130,7 @@ class FactureRepository
 
     public function getRevenue($startDate, $endDate): float
     {
-        return Facture::whereBetween('facture_date', [$startDate, $endDate])
+        return Facture::whereBetween('created_at', [$startDate, $endDate])
             ->get()
         ->filter(function ($facture) {
                 return $facture->paid_amount > 0;
@@ -141,11 +141,11 @@ class FactureRepository
     public function getFacturesForChart($startDate, $endDate): array
     {
         // Get all factures between the provided start and end date
-        $factures = Facture::whereBetween('facture_date', [$startDate, $endDate])
+        $factures = Facture::whereBetween('created_at', [$startDate, $endDate])
             ->get()
             ->map(function ($facture) {
                 return [
-                    'date' => $facture->facture_date, // format the date to YYYY-MM-DD
+                    'date' => $facture->created_at->format('Y-m-d'), // format the date to YYYY-MM-DD
                     'value' => $facture->totals, // or any other relevant metric for the chart
                 ];
             });

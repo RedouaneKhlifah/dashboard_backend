@@ -18,9 +18,9 @@ class ProductService
         $this->repository = $repository;
     }
 
-    public function getAllProducts($searchTerm = null, $perPage = 10)
+    public function getAllProducts($searchTerm = null, $perPage = 10 ,$unit)
     {
-        $products = $this->repository->getAllWithSearch($searchTerm, $perPage);
+        $products = $this->repository->getAllWithSearch($searchTerm, $perPage , $unit);
 
         return $products;
     }

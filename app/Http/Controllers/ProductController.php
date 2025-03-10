@@ -23,7 +23,8 @@ class ProductController extends Controller
     {
         $searchTerm = $request->query('search');
         $perPage = $request->query('per_page', 10);
-        $products = $this->productService->getAllProducts($searchTerm, $perPage);
+        $unit = $request->query('unit');
+        $products = $this->productService->getAllProducts($searchTerm, $perPage ,$unit);
         return response()->json($products);
     }
 
@@ -31,6 +32,7 @@ class ProductController extends Controller
     {
         $product = $this->productService->createProduct($request->validated() , $request->file('image'));
         broadcast(new ModelUpdated($product, 'product', 'created'));
+        
         return response()->json($product, 201);
     }
     

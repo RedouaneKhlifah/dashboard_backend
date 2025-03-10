@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Models\Facture;
 use App\Models\Ticket;
+use App\Observers\FactureObserver;
 use App\Observers\TicketObserver;
 use App\Repositories\ClientRepository;
 use Illuminate\Support\ServiceProvider;
@@ -39,6 +41,7 @@ class AppServiceProvider extends ServiceProvider
 
         // Register the observer
        Ticket::observe(TicketObserver::class);
+
 
     }
 }

@@ -13,7 +13,7 @@ class ProductRepository
         $this->model = $model;
     }
 
-    public function getAllWithSearch($searchTerm = null, $perPage = 10)
+    public function getAllWithSearch($searchTerm = null, $perPage = 10 ,$unit)
     {
         $query = $this->model->newQuery();
 
@@ -24,8 +24,11 @@ class ProductRepository
             });
         }
 
-        return $query->with('images')
-                     ->orderBy('created_at', 'desc')
+        if ($unit) {
+            $query->whereRaw('LOWER(unit) = ?', [strtolower($unit)]);
+        }
+
+        return $query->orderBy('created_at', 'desc')
                      ->paginate($perPage);
     }
 
