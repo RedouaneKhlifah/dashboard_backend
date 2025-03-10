@@ -20,14 +20,9 @@ class UpdateProductStockFromFacture implements ShouldQueue
 
 
     public function handle(): void
-    {
-        Log::info("Updating stock for product " . $this->facture->products);
-        // Ensure products are loaded
-
+    {    
         $this->facture->products->each(function ($product) {
             $quantity = $product->pivot->quantity;
-
-            Log::info("Updating stock for product {$product->id} by {$quantity}");
 
             if ($this->action === 'subtract') {
                 $product->decrement('stock', $quantity);

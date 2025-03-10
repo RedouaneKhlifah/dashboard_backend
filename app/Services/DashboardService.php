@@ -29,7 +29,7 @@ class DashboardService
         return [
             'factures_partial' => $this->factureRepo->getPartialStatusData($startDate, $endDate),
             'paid_amount_partial_complete' => $this->factureRepo->getPaidPartialCompleteSum($startDate, $endDate),
-            'ticket_net' => $this->ticketRepo->getNetEntryExit($startDate, $endDate),
+            'total_stock' => $this->ticketRepo->getTotalProductStock($startDate, $endDate),
             'profit' => $this->factureRepo->getProfit($startDate, $endDate),
             'revenue' => $this->factureRepo->getRevenue($startDate, $endDate),
             'top_partenaires' => $this->ticketRepo->getTopPartenairesByNetWeight($startDate, $endDate),

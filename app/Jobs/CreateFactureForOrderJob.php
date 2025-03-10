@@ -61,6 +61,9 @@ class CreateFactureForOrderJob implements ShouldQueue
         }
 
         $facture = $facture->load(['products' , 'order', 'client']);
+        
+        UpdateProductStockFromFacture::dispatch($facture, 'subtract');
+
 
         $facture = $this->sharedService->formatProducts($facture);
 

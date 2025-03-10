@@ -118,11 +118,11 @@ class FactureRepository
     public function getProfit($startDate, $endDate): float
     {     
         $revenue = $this->getRevenue($startDate, $endDate);
-        return Facture::with(['products' => fn($q) => $q->withTrashed()])
+        return Facture::with(['products']) // No need for `withoutTrashed()` as trashed products are excluded by default
             ->whereBetween('created_at', [$startDate, $endDate])
             ->get()
             ->flatMap(fn(Facture $facture) => $facture->products->map(fn($product) => [
-                'profit' => $revenue - (($product->cost_price ) * $product->pivot->quantity)
+                'profit' => $revenue - (($product->cost_price) * $product->pivot->quantity)
             ]))
             ->sum('profit');
     }

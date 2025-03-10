@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Models\Product;
 use App\Models\Ticket;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -93,18 +94,10 @@ class TicketRepository
         ];
     }
 
-    public function getNetEntryExit($startDate, $endDate): array
+    public function getTotalProductStock($startDate, $endDate)
     {
-
-        return [
-            'entry' => Ticket::where('status', Ticket::STATUS_ENTRY)
-                ->whereBetween('created_at', [$startDate, $endDate])
-                ->sum(DB::raw('poids_brut - poids_tare')),
-
-            'exit' => Ticket::where('status', Ticket::STATUS_EXIT)
-                ->whereBetween('created_at', [$startDate, $endDate])
-                ->sum(DB::raw('poids_brut - poids_tare'))
-        ];
+        return Product::whereBetween('created_at', [$startDate, $endDate])
+                ->sum('stock');
     }
     public function getTopPartenairesByNetWeight($startDate, $endDate): array
     {
