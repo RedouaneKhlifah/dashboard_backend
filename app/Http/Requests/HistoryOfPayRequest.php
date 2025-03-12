@@ -18,25 +18,9 @@ class HistoryOfPayRequest extends FormRequest
     {
         return [
             'total_ton' => 'required|numeric',
+            'price_per_ton' => 'required|numeric',
             'start_date' => 'required|date',
             'end_date' => 'required|date'
         ];
-    }
-
-
-    public function messages()
-    {
-        return [
-            '*.matricule.exists' => 'The matricule :input does not exist in our records',
-            '*.date.date' => 'Invalid date format for :input',
-        ];
-    }
-
-    protected function failedValidation(Validator $validator)
-    {
-        $errors = $validator->errors()->all();
-        throw new HttpResponseException(response()->json([
-            'message' => $errors[0], // Return only the first error message
-        ], 422));
     }
 }

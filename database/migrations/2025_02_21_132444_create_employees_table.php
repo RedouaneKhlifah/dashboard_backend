@@ -17,7 +17,6 @@ class CreateEmployeesTable extends Migration
             $table->string('address');
             $table->string('city');
             $table->date('date_of_engagement');
-            $table->decimal('price_per_ton', 8, 2);
             $table->string('cnss_number')->nullable()->default("");
             $table->date('birth_date');
             $table->timestamps();
