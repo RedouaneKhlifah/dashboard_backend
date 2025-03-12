@@ -51,15 +51,15 @@ class  EmployeeImport implements ToCollection , WithHeadingRow
             if (!isset($data[$key])) {
                 $data[$key] = [
                     'employee_id' => $employee->id,
-                    'total_hours' => 0,
+                    'total_ton' => 0,
                     'total_gain' => 0,
                     'start_date' => $startDate,
                     'end_date' => $endDate,
                 ];
             }
 
-            $data[$key]['total_hours'] += $presence;
-            $data[$key]['total_gain'] += $presence * $employee->price_per_hour;
+            $data[$key]['total_ton'] += $presence;
+            $data[$key]['total_gain'] += $presence * $employee->price_per_ton;
         }
 
         foreach ($data as $record) {
@@ -70,7 +70,7 @@ class  EmployeeImport implements ToCollection , WithHeadingRow
                     'end_date' => $record['end_date']
                 ],
                 [
-                    'total_hours' => $record['total_hours'],
+                    'total_ton' => $record['total_ton'],
                     'total_gain' => $record['total_gain']
                 ]
             );

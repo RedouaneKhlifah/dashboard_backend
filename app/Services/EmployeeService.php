@@ -86,18 +86,18 @@ class EmployeeService
             
 
             // Calculate total pay
-            $totalGain = $totalHours * (float)$employee->price_per_hour;
+            $totalGain = $totalHours * (float)$employee->price_per_ton;
             
             // Return summarized data for this employee
             return [
                 'employee_id' => $employee->id,
-                "price_per_hour" => $employee->price_per_hour,
+                "price_per_ton" => $employee->price_per_ton,
                 'matricule' => $matricule,
                 'name' => $employee->name ?? 'Unknown',
-                'total_hours' => round($totalHours, 2), // Round to 2 decimal places
+                'total_ton' => round($totalHours, 2), // Round to 2 decimal places
                 'start_date' => $startDate,
                 'end_date' => $endDate,
-                'price_per_hour' => (float)$employee->price_per_hour,
+                'price_per_ton' => (float)$employee->price_per_ton,
                 'total_gain' => round($totalGain, 2), // Round to 2 decimal places
                 'daily_hours' => $dailyHours->toArray(), // Optional: include daily breakdown
             ];
@@ -107,9 +107,19 @@ class EmployeeService
         ->all();
     }
     
-    public function storeEmployeePayHistory(array $processedData)
+    public function storeEmployeePayHistory(array $data, Employee $employee)
     {
-        Log::info('Storing pay history', $processedData);
-        return $this->repository->storeHistory($processedData);
+        // Format data before saving
+        $formattedData = [
+            'employee_id' => $employee->id,
+            'total_ton' => $data['total_ton'],
+            'price_per_ton' => $employee->price_per_ton, // Assuming price is stored in Employee
+            'total_gain' => $data['total_ton'] * $employee->price_per_ton, // Calculated value
+            'start_date' => date('Y-m-d H:i:s', strtotime($data['start_date'])), // Fix Date Format
+            'end_date' => date('Y-m-d H:i:s', strtotime($data['end_date'])),     // Fix Date Format
+        ];
+    
+        return $this->repository->storeHistory($formattedData);
     }
+    
 }

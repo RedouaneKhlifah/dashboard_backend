@@ -17,7 +17,7 @@ class Employee extends Model
         'address',
         'city',
         'date_of_engagement',
-        'price_per_hour',
+        'price_per_ton',
         "cnss_number", // optional
         "birth_date", // optional
     ];

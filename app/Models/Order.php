@@ -62,7 +62,7 @@ class Order extends Model
     
         // Calculate subtotal (HT) - sum of (unit price * quantity)
         $subtotal = $products->sum(function ($product) {
-            return data_get($product, 'price_unitaire', 0) * data_get($product, 'quantity', 0);
+            return data_get($product, 'sale_price', 0) * data_get($product, 'quantity', 0);
         });
     
         // Calculate TVA amount (TVA% * subtotal)

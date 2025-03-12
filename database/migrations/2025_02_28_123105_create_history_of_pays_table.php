@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('history_of_pays', function (Blueprint $table) {
             $table->id();
             $table->foreignId('employee_id')->constrained('employees')->onDelete('cascade');
-            $table->decimal('price_per_hour', 10, 2);
-            $table->decimal('total_hours', 8, 2);
+            $table->decimal('price_per_ton', 10, 2);
+            $table->decimal('total_ton', 8, 2);
             $table->decimal('total_gain', 10, 2);
             $table->date('start_date');
             $table->date('end_date');

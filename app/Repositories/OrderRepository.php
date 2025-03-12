@@ -22,15 +22,11 @@ class OrderRepository
         if ($searchTerm) {
             $query->where(function ($q) use ($searchTerm) {
                 $q->where('reference', 'like', "%{$searchTerm}%")
-                  ->orWhereHas('ticket', function ($q) use ($searchTerm) {
-                      $q->whereHas('client', function ($q) use ($searchTerm) {
-                          $q->where('first_name', 'like', "%{$searchTerm}%")
-                            ->orWhere('last_name', 'like', "%{$searchTerm}%");
+                    ->orWhereHas('client', function ($q) use ($searchTerm) {
+                          $q->where('first_name', 'like', "%{$searchTerm}%");
+                          $q->orWhere('last_name', 'like', "%{$searchTerm}%")
+                          ->orWhere(DB::raw("CONCAT(first_name, ' ', last_name)"), 'like', "%{$searchTerm}%");                            
                       });
-                  })
-                  ->orWhereHas('products', function ($q) use ($searchTerm) {
-                      $q->where('name', 'like', "%{$searchTerm}%");
-                  });
             });
         }
 

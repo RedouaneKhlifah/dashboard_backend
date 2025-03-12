@@ -26,7 +26,7 @@ class OrderRequest extends FormRequest
             'products' => 'required|array',
             'products.*.product_id' => 'required|exists:products,id',
             'products.*.price_unitaire' => 'required|numeric',
-            'products.*.quantity' => 'required|integer|min:1',
+            'products.*.quantity' => 'required|integer',
         ];
     }
 }

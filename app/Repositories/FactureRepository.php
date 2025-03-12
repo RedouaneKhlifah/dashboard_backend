@@ -3,8 +3,8 @@
 namespace App\Repositories;
 
 use App\Models\Facture;
-use Carbon\Carbon;
-use Log;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class FactureRepository
 {
@@ -22,15 +22,11 @@ class FactureRepository
         if ($searchTerm) {
             $query->where(function ($q) use ($searchTerm) {
                 $q->where('reference', 'like', "%{$searchTerm}%")
-                  ->orWhereHas('order.ticket', function ($q) use ($searchTerm) {
-                      $q->whereHas('client', function ($q) use ($searchTerm) {
-                          $q->where('first_name', 'like', "%{$searchTerm}%")
-                            ->orWhere('last_name', 'like', "%{$searchTerm}%");
+                      ->orWhereHas('client', function ($q) use ($searchTerm) {
+                          $q->where('first_name', 'like', "%{$searchTerm}%");
+                          $q->orWhere('last_name', 'like', "%{$searchTerm}%")
+                            ->orWhere(DB::raw("CONCAT(first_name, ' ', last_name)"), 'like', "%{$searchTerm}%");
                       });
-                  })
-                  ->orWhereHas('products', function ($q) use ($searchTerm) {
-                      $q->where('name', 'like', "%{$searchTerm}%");
-                  });
             });
         }
 
@@ -118,24 +114,40 @@ class FactureRepository
     public function getProfit($startDate, $endDate): float
     {     
         $revenue = $this->getRevenue($startDate, $endDate);
-        return Facture::with(['products']) // No need for `withoutTrashed()` as trashed products are excluded by default
+
+        $costProducts = Facture::with(['products']) // No need for `withoutTrashed()` as trashed products are excluded by default
             ->whereBetween('created_at', [$startDate, $endDate])
-            ->get()
+            ->get()       
+            ->filter(function ($facture) {
+                return $facture->paid_amount > 0;
+            })
             ->flatMap(fn(Facture $facture) => $facture->products->map(fn($product) => [
-                'profit' => $revenue - (($product->cost_price) * $product->pivot->quantity)
+                'profit' =>   $product->cost_price * $product->pivot->quantity,
             ]))
             ->sum('profit');
+
+
+
+            Log::info("costProducts : ".  $costProducts);
+            Log::info("revenue : ".  $revenue);
+            Log::info("profit : ".  ($revenue - $costProducts));
+            
+
+            return $revenue - $costProducts;
     }
 
 
     public function getRevenue($startDate, $endDate): float
     {
-        return Facture::whereBetween('created_at', [$startDate, $endDate])
+        $revenue = Facture::whereBetween('created_at', [$startDate, $endDate])
             ->get()
         ->filter(function ($facture) {
                 return $facture->paid_amount > 0;
             })
             ->sum('totals');
+            Log::info("getRevenue revenue ------------- : ".  $revenue);
+
+            return $revenue;
     }
 
     public function getFacturesForChart($startDate, $endDate): array

@@ -35,7 +35,7 @@ class EmployeeRequest extends FormRequest
             'address'             => 'required|string|max:255',
             'city'                => 'required|string|max:255',
             'date_of_engagement'  => 'required|date',
-            'price_per_hour'      => 'required|numeric',
+            'price_per_ton'      => 'required|numeric',
             "birth_date"          => 'required|date',
         ];
     }

@@ -57,44 +57,14 @@ class EmployeeController extends Controller
         return response()->json(null, 204);
     }
 
-    public function StoreHistoryOfPay(HistoryOfPayRequest $request)
+    public function StoreHistoryOfPay(HistoryOfPayRequest $request , Employee $employee)
     {
-
-        Log::info('Processing payment history request' , $request->all());
-
         try {
-            $data = $request->all();
-            $validMatricules = [];
-            $invalidMatricules = [];
-            
-            // Check each matricule
-            foreach ($data as $entry) {
-                $matricule = $entry['matricule'];
-                if (Employee::where('matricule', $matricule)->exists()) {
-                    if (!in_array($matricule, $validMatricules)) {
-                        $validMatricules[] = $matricule;
-                    }
-                } else {
-                    if (!in_array($matricule, $invalidMatricules)) {
-                        $invalidMatricules[] = $matricule;
-                    }
-                }
-            }
+
+
+           $hisyoryOfPay  = $this->employeeService->storeEmployeePayHistory($request->validated() , $employee);
     
-            // Process only valid matricules
-            $filteredData = array_filter($data, function ($entry) use ($validMatricules) {
-                return in_array($entry['matricule'], $validMatricules);
-            });
-    
-            $processedData = $this->employeeService->processPayData($filteredData);
-            $this->employeeService->storeEmployeePayHistory($processedData);
-    
-            return response()->json([
-                'message' => 'Payment history processed successfully',
-                'valid_matricules' => $validMatricules,
-                'invalid_matricules' => $invalidMatricules,
-                'data' => $processedData
-            ], 201);
+            return response()->json($hisyoryOfPay, 201);
     
         } catch (\Exception $e) {
             return response()->json([

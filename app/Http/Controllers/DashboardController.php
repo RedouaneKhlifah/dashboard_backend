@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Services\DashboardService;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 

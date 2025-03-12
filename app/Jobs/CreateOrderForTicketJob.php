@@ -53,7 +53,7 @@ class CreateOrderForTicketJob implements ShouldQueue
             // - The product model has a 'price' attribute for the unit price.
             // - The ticket's 'number_prints' field represents the quantity.
             $order->products()->attach($this->ticket->product->id, [
-                'price_unitaire' =>  0,
+                'price_unitaire' =>  $this->ticket->product->sale_price,
                 'quantity'       => $this->ticket->poids_brut - $this->ticket->poids_tare,
                 'ticket_id'      => $this->ticket->id
 

@@ -9,7 +9,7 @@ class HistoryOfPay extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['employee_id', 'total_hours', 'price_per_hour', 'total_gain', 'start_date', 'end_date'];
+    protected $fillable = ['employee_id', 'total_ton', 'price_per_ton', 'total_gain', 'start_date', 'end_date'];
 
     public function employee()
     {

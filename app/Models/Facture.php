@@ -10,6 +10,11 @@ class Facture extends Model
 {
     use HasFactory , SoftDeletes;
 
+    const DRAFT = "DRAFT";
+    const UNPAID = "UNPAID";
+    const PARTIALLY_PAID = "PARTIALLY_PAID";
+    const PAID = "PAID";
+
     protected $table = 'factures';
 
     protected $fillable = [
@@ -25,7 +30,9 @@ class Facture extends Model
         'note',
     ];
 
-    protected $appends = ['totals',"total" , 'status']; // Adds total to the JSON output
+    
+
+    protected $appends = ['totals',"total" , 'statusText' ,"status"]; // Adds total to the JSON output
 
     /**
      * Relationships
@@ -58,7 +65,7 @@ class Facture extends Model
     
         // Calculate subtotal (HT) - sum of (unit price * quantity)
         $subtotal = $products->sum(function ($product) {
-            return data_get($product, 'price_unitaire', 0) * data_get($product, 'quantity', 0);
+            return data_get($product, 'sale_price', 0) * data_get($product, 'quantity', 0);
         });
     
         // Calculate TVA amount (TVA% * subtotal)
@@ -83,7 +90,7 @@ class Facture extends Model
         
         // Calculate subtotal (HT) - sum of (unit price * quantity)
         $subtotal = $products->sum(function ($product) {
-            return data_get($product, 'pivot.price_unitaire', 0) * data_get($product, 'pivot.quantity', 0);
+            return data_get($product, 'sale_price', 0) * data_get($product, 'pivot.quantity', 0);
         });
     
     
@@ -103,7 +110,7 @@ class Facture extends Model
     }
     
 
-    public function getStatusAttribute()
+    public function getStatusTextAttribute()
     {
         if(is_null($this->paid_amount)){
             return trans("facture.statuses.draft");
@@ -113,6 +120,19 @@ class Facture extends Model
             return trans("facture.statuses.partially_paid");
         }else{
             return trans("facture.statuses.paid");
+        }
+    }
+
+    public function getStatusAttribute()
+    {
+        if(is_null($this->paid_amount)){
+            return self::DRAFT;
+        }elseif($this->paid_amount == 0){
+            return self::UNPAID;
+        }elseif($this->paid_amount < $this->total){ 
+            return self::PARTIALLY_PAID;
+        }else{
+            return self::PAID;
         }
     }
 

@@ -51,21 +51,8 @@ class EmployeeRepository
         return $employee->delete();
     }
 
-    public function storeHistory(array $processedData)
+    public function storeHistory(array $data)
     {
-        Log::info('Storing history of pay for employees', $processedData);
-        foreach ($processedData as $data) {
-            HistoryOfPay::updateOrCreate(
-                [
-                    'employee_id' => $data['employee_id'],
-                    "price_per_hour" => $data['price_per_hour'],
-                    'start_date' => $data['start_date'],
-                    'end_date' => $data['end_date'],
-                    "total_hours" => $data['total_hours'],
-                    "total_gain" => $data['total_gain'],
-                ],
-                $data
-            );
-        }
+        return HistoryOfPay::create($data);
     }
 }
