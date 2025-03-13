@@ -160,7 +160,6 @@ return [
     App\Providers\AppServiceProvider::class,
     App\Providers\BroadcastServiceProvider::class,
     Maatwebsite\Excel\ExcelServiceProvider::class,
-    App\Providers\ReverbServiceProvider::class,
 
 ],
 
