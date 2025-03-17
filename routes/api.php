@@ -14,7 +14,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['api', 'SetLocale'])->group(function () {
-    // Public route for signing in (keeping POST for authentication)
     Route::put('/sign-in', [AuthController::class, 'signIn']);
 
     // Protected routes requiring JWT authentication
