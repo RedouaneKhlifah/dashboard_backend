@@ -25,14 +25,25 @@ return new class extends Migration
             $table->softDeletes(); // created_at and updated_at
         });
 
-        // Add check constraint to enforce that client_id is NULL when status is ENTRY
-        DB::statement('
-            ALTER TABLE tickets
-            ADD CONSTRAINT client_id_required_for_exit
-            CHECK (
-                (status = "ENTRY" AND client_id IS NULL) OR
-                (status = "EXIT" AND client_id IS NOT NULL)
-            )
+        // Use a trigger instead of CHECK constraint
+        DB::unprepared('
+            CREATE TRIGGER check_client_id_before_insert BEFORE INSERT ON tickets
+            FOR EACH ROW
+            BEGIN
+                IF (NEW.status = "EXIT" AND NEW.client_id IS NULL) THEN
+                    SIGNAL SQLSTATE "45000" SET MESSAGE_TEXT = "client_id is required for EXIT";
+                END IF;
+            END;
+        ');
+
+        DB::unprepared('
+            CREATE TRIGGER check_client_id_before_update BEFORE UPDATE ON tickets
+            FOR EACH ROW
+            BEGIN
+                IF (NEW.status = "EXIT" AND NEW.client_id IS NULL) THEN
+                    SIGNAL SQLSTATE "45000" SET MESSAGE_TEXT = "client_id is required for EXIT";
+                END IF;
+            END;
         ');
     }
 
@@ -43,13 +54,13 @@ return new class extends Migration
     {
         // Disable foreign key checks
         DB::statement('SET FOREIGN_KEY_CHECKS = 0');
-        
-        // Optionally, if you need to drop a check constraint and your MySQL version supports it,
-        // use the DROP CHECK syntax. (Otherwise, you may omit this if the table is being dropped.)
-        // DB::statement('ALTER TABLE tickets DROP CHECK client_id_required_for_exit');
-        
+
+        // Drop triggers
+        DB::unprepared('DROP TRIGGER IF EXISTS check_client_id_before_insert');
+        DB::unprepared('DROP TRIGGER IF EXISTS check_client_id_before_update');
+
         Schema::dropIfExists('tickets');
-        
+
         // Re-enable foreign key checks
         DB::statement('SET FOREIGN_KEY_CHECKS = 1');
     }

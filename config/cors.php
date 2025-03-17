@@ -1,6 +1,7 @@
 <?php
 
 return [
+
     /*
     |--------------------------------------------------------------------------
     | Cross-Origin Resource Sharing (CORS) Configuration
@@ -14,12 +15,20 @@ return [
     |
     */
 
-    'paths' => ['*' ], // Add your routes here
+    'paths' => ['api/*', 'sanctum/csrf-cookie'],
+
     'allowed_methods' => ['*'],
-    'allowed_origins' => ['*'], // Your Next.js frontend URL
-    'allowed_origins_patterns' => ['*'],
+
+    'allowed_origins' => ['*'],
+
+    'allowed_origins_patterns' => [],
+
     'allowed_headers' => ['*'],
+
     'exposed_headers' => [],
+
     'max_age' => 0,
-    'supports_credentials' => true, // REQUIRED FOR COOKIES
+
+    'supports_credentials' => false,
+
 ];

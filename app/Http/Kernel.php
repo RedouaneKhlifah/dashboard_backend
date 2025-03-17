@@ -28,6 +28,7 @@ class Kernel extends HttpKernel
         ],
 
         'api' => [
+            \Illuminate\Http\Middleware\HandleCors::class,
             \App\Http\Middleware\SetLocale::class,
             // Middleware for API routes
         ],
@@ -42,6 +43,5 @@ class Kernel extends HttpKernel
      */
     protected $routeMiddleware = [
         'SetLocale' => \App\Http\Middleware\SetLocale::class,
-        'handleCors' => \Illuminate\Http\Middleware\HandleCors::class,
     ];
 }
