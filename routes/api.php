@@ -83,6 +83,7 @@ Route::middleware(['api', 'SetLocale'])->group(function () {
         Route::delete('/employees/{employee}', [EmployeeController::class, 'destroy']);
         Route::put('/employees/history-of-pay/{employee}', [EmployeeController::class, 'StoreHistoryOfPay']);
         Route::get('/employees/history-of-pay/{employee}', [EmployeeController::class, 'getEmployeeHistoryOfPay']);
+        Route::delete('/employees/history-of-pay/{historyOfPay}', [EmployeeController::class, 'deleteHistoryOfPay']);
 
         // Transaction routes
         Route::get('/transactions', [TransactionController::class, 'index']);

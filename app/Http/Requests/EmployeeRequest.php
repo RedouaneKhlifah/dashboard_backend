@@ -36,6 +36,7 @@ class EmployeeRequest extends FormRequest
             'city'                => 'required|string|max:255',
             'date_of_engagement'  => 'required|date',
             "birth_date"          => 'required|date',
+            "cnss_number"         => 'nullable|string|max:255',
         ];
     }
 

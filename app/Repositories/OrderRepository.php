@@ -23,9 +23,7 @@ class OrderRepository
             $query->where(function ($q) use ($searchTerm) {
                 $q->where('reference', 'like', "%{$searchTerm}%")
                     ->orWhereHas('client', function ($q) use ($searchTerm) {
-                          $q->where('first_name', 'like', "%{$searchTerm}%");
-                          $q->orWhere('last_name', 'like', "%{$searchTerm}%")
-                          ->orWhere(DB::raw("CONCAT(first_name, ' ', last_name)"), 'like', "%{$searchTerm}%");                            
+                          $q->where('company_ice', 'like', "%{$searchTerm}%");
                       });
             });
         }

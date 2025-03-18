@@ -17,8 +17,12 @@ class ClientRequest extends FormRequest
         $clientId = $this->route('client');
         
         return [
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
+            'company_ice' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('clients', 'company_ice')->ignore($clientId),
+            ],            
             'email' => [
                 'required',
                 'email',
@@ -35,6 +39,7 @@ class ClientRequest extends FormRequest
     {
         return [
             'email.unique' => trans("client.validation.email_already_exists"),
+            'company_ice.unique' => trans("client.validation.company_ice_already_exists"),
         ];
     }
 }

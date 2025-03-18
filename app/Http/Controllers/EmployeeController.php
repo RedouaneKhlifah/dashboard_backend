@@ -6,6 +6,7 @@ use App\Events\ModelUpdated;
 use App\Http\Requests\EmployeeRequest;
 
 use App\Models\Employee;
+use App\Models\HistoryOfPay;
 use App\Services\EmployeeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -72,6 +73,12 @@ class EmployeeController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    public function deleteHistoryOfPay(HistoryOfPay $historyOfPay)
+    {
+        $historyOfPay->delete();
+        return response()->json(null, 204);
     }
 
     public function getEmployeeHistoryOfPay(Employee $employee)

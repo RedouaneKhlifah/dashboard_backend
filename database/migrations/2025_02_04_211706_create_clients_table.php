@@ -14,8 +14,7 @@ return new class extends Migration
     {
         Schema::create('clients', function (Blueprint $table) {
             $table->id(); // Auto-incrementing primary key
-            $table->string('first_name'); // First name of the client
-            $table->string('last_name'); // Last name of the client
+            $table->string('company_ice')->unique(); // company_ice of the client
             $table->string('email')->unique(); // Unique email address
             $table->string('phone'); // Phone number
             $table->string('country'); // Country
