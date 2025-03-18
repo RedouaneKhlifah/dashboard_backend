@@ -30,7 +30,7 @@ class TicketRepository
                     $q->where('name', 'like', "%{$searchTerm}%");
                 })
                 ->orWhereHas('client', function ($q) use ($searchTerm) {
-                    $q->where('company_ice', 'like', "%{$searchTerm}%");
+                    $q->where('company', 'like', "%{$searchTerm}%");
 
                 });
             });

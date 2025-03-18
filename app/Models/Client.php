@@ -12,7 +12,8 @@ class Client extends Model
 
     // Specify the fields that can be mass-assigned
     protected $fillable = [
-        'company_ice',
+        "company",
+        'ice',
         'email',
         'phone',
         'country',

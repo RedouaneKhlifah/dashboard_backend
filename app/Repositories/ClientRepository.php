@@ -21,7 +21,7 @@ class ClientRepository
     
         if ($searchTerm) {
             $query->where(function ($q) use ($searchTerm) {
-                $q->where('company_ice', 'like', "%{$searchTerm}%");
+                $q->where('company', 'like', "%{$searchTerm}%");
             });
         }
     
