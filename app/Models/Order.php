@@ -16,6 +16,7 @@ class Order extends Model
         'ticket_id',
         'client_id',
         'reference',
+        'bcn',
         'order_date',
         'expiration_date',
         'tva',

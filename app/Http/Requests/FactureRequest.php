@@ -23,6 +23,7 @@ class FactureRequest extends FormRequest
             'tva' => 'required|numeric',
             'remise_type' => 'required|string|max:255 |in:PERCENT,FIXED',
             'remise' => 'nullable|numeric',
+            "bcn" => 'nullable|string',
             'note' => 'nullable|string',
             'products' => 'required|array',
             'products.*.product_id' => 'required|exists:products,id',

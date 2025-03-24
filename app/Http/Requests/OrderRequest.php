@@ -23,6 +23,7 @@ class OrderRequest extends FormRequest
             'remise_type' => 'required|string|max:255 |in:PERCENT,FIXED',
             'remise' => 'nullable|numeric',
             'note' => 'nullable|string',
+            'bcn' => 'nullable|string',
             'products' => 'required|array',
             'products.*.product_id' => 'required|exists:products,id',
             'products.*.price_unitaire' => 'required|numeric',

@@ -27,6 +27,7 @@ class Facture extends Model
         'remise_type',
         'remise',
         "paid_amount",
+        "bcn",
         'note',
     ];
 
