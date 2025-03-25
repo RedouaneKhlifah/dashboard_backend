@@ -46,6 +46,7 @@ class CreateOrderForTicketJob implements ShouldQueue
             'remise_type'     => 'PERCENT',  // or 'FIXED'
             'remise'          => 0,
             'note'            => '',
+            "is_in_tone"     => false,
         ]);
         
             // Attach the product to the order.
