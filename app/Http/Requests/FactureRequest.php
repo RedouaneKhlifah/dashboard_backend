@@ -24,6 +24,7 @@ class FactureRequest extends FormRequest
             'remise_type' => 'required|string|max:255 |in:PERCENT,FIXED',
             'remise' => 'nullable|numeric',
             "bcn" => 'nullable|string',
+            "is_in_tone" => 'nullable|boolean',
             'note' => 'nullable|string',
             'products' => 'required|array',
             'products.*.product_id' => 'required|exists:products,id',

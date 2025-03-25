@@ -50,6 +50,7 @@ class CreateFactureForOrderJob implements ShouldQueue
             'remise'          => $this->order->remise,
             'note'            => $this->order->note,
             "bcn"             => $this->order->bcn,
+            "is_in_tone"      => $this->order->is_in_tone,
             "paid_amount"     => null,
         ]);
         

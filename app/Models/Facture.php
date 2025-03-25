@@ -28,6 +28,7 @@ class Facture extends Model
         'remise',
         "paid_amount",
         "bcn",
+        "is_in_tone",
         'note',
     ];
 

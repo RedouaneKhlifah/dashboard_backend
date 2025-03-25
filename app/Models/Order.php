@@ -17,6 +17,7 @@ class Order extends Model
         'client_id',
         'reference',
         'bcn',
+        'is_in_tone',
         'order_date',
         'expiration_date',
         'tva',
